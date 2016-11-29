@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HelperClasses\ArrayHelper.cs" />
     <Compile Include="HelperClasses\Autobot.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -83,13 +84,11 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Tiles\cornerMegatron.jpg" />
-    <Content Include="Tiles\cornerOptimus.jpg" />
-    <Content Include="Tiles\deadendOptimus.jpg" />
-    <Content Include="Tiles\Image1.jpg" />
-    <Content Include="Tiles\straightOptimus.jpg" />
-    <Content Include="Tiles\t-tileOptimus.jpg" />
-    <Content Include="Tiles\x-tileOptimus.jpg" />
+    <Content Include="Tiles\corner.jpg" />
+    <Content Include="Tiles\deadend.jpg" />
+    <Content Include="Tiles\straight.jpg" />
+    <Content Include="Tiles\t-tile.jpg" />
+    <Content Include="Tiles\x-tile.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

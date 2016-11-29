@@ -2,10 +2,12 @@
 using System.Drawing;
 using System.IO.Ports;
 using System.Windows.Forms;
+using MazeDrawer.HelperClasses;
 
 namespace MazeDrawer
 {
     public enum Orientation { EAST, SOUTH, WEST, NORTH };
+    public enum TileType { STRAIGHT, TTILE, XTILE, CORNER, DEADEND };
 
     public partial class Form1 : Form
     {
@@ -16,9 +18,6 @@ namespace MazeDrawer
         private Autobot optimus;
         private Autobot bumblebee;
         private Graphics graphic;
-
-        private Tile[,] tileArrayOptimus = new Tile[10, 10];
-        private Tile[,] tileArrayMegatron = new Tile[10, 10];
 
         // Size of the drawing area
         private int drawAreaX = 1000;
@@ -36,11 +35,11 @@ namespace MazeDrawer
             serialport.Open();
             serialport.DataReceived += Serialport_DataReceived;
 
-            tiles.Images.Add(Image.FromFile(@"Tiles\halftile.jpg"));
+            tiles.Images.Add(Image.FromFile(@"Tiles\deadend.jpg"));
             tiles.Images.Add(Image.FromFile(@"Tiles\straight.jpg"));
             tiles.Images.Add(Image.FromFile(@"Tiles\corner.jpg"));
-            tiles.Images.Add(Image.FromFile(@"Tiles\Ttile.jpg"));
-            tiles.Images.Add(Image.FromFile(@"Tiles\xtile.jpg"));
+            tiles.Images.Add(Image.FromFile(@"Tiles\t-tile.jpg"));
+            tiles.Images.Add(Image.FromFile(@"Tiles\x-tile.jpg"));
 
             optimus = new Autobot(Orientation.NORTH);
             bumblebee = new Autobot(Orientation.NORTH);
@@ -66,66 +65,208 @@ namespace MazeDrawer
         private delegate void LineReceivedEvent(string data);
 
         /// <summary>
-        /// Listener gets tile and nothing else
+        /// Determine the sender
         /// </summary>
         /// <param name="data"></param>
         private void DataReceived(string data)
         {
-            switch (data)
+            char robot = data[0];
+
+            switch(robot)
             {
-                case "0":
-                    Tile tileStraight = new Tile(tiles.Images[1]);
-                    RotateTile(tileStraight);
+                case '1':
+                    DoRobotyStuff(optimus, data);
                     break;
-                case "1":
-                    Tile tileTLeft = new Tile(tiles.Images[3]);
-                    break;
-                case "2":
-                    Tile tileTRight = new Tile(tiles.Images[3]);
-                    break;
-                case "3":
-                    Tile tileX = new Tile(tiles.Images[4]);
-                    break;
-                case "4":
-                    Tile tileCornerLeft = new Tile(tiles.Images[2]);
-                    break;
-                case "5":
-                    Tile tileCornerRight = new Tile(tiles.Images[2]);
-                    break;
-                case "6":
-                    Tile tileT = new Tile(tiles.Images[3]);
-                    break;
-                case "7":
-                    Tile tileDeadEnd = new Tile(tiles.Images[0]);
+                case '2':
+                    DoRobotyStuff(bumblebee, data);
                     break;
             }
         }
 
+        /* TODO: Rename this function at some point or another
+         * Also write a better summary
+         */
         /// <summary>
-        /// Corrects the tile to the correct orientation
+        /// Do things with robots and tiles 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="tile"></param>
-        private void RotateTile(Autobot sender, Tile tile)
+        /// <param name="robot"></param>
+        /// <param name="data"></param>
+        private void DoRobotyStuff(Autobot robot, string data)
         {
-            switch (sender.Orientation)
+            switch (data)
             {
-                case Orientation.EAST:
-                    tile.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                case "0":
+                    Tile tileStraight = new Tile(tiles.Images[1], TileType.STRAIGHT);
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            tiles.Images[1].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            //Orientation is relative to the default position of the tile as depicted in the images
+                            tileStraight.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.EAST:
+                            tileStraight.Orientation = Orientation.NORTH;
+                            break;
+                        case Orientation.SOUTH:
+                            tiles.Images[1].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileStraight.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.WEST:
+                            tileStraight.Orientation = Orientation.NORTH;
+                            break;
+                    }
+                    UpdateRobot(robot, tileStraight);
                     break;
-                case Orientation.SOUTH:
-                    tile.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                case "1":
+                    Tile tileTLeft = new Tile(tiles.Images[3], TileType.TTILE);
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileTLeft.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.EAST:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileTLeft.Orientation = Orientation.SOUTH;
+                            break;
+                        case Orientation.SOUTH:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileTLeft.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.WEST:
+                            tileTLeft.Orientation = Orientation.NORTH;
+                            break;
+                    }
+                    UpdateRobot(robot, tileTLeft);
                     break;
-                case Orientation.WEST:
-                    tile.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                case "2":
+                    Tile tileTRight = new Tile(tiles.Images[3], TileType.TTILE);
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileTRight.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.EAST:
+                            tileTRight.Orientation = Orientation.NORTH;
+                            break;
+                        case Orientation.SOUTH:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileTRight.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.WEST:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileTRight.Orientation = Orientation.SOUTH;
+                            break;
+                    }
+                    UpdateRobot(robot, tileTRight);
+                    break;
+                case "3":
+                    Tile tileX = new Tile(tiles.Images[4], TileType.XTILE);
+                    tileX.Orientation = Orientation.NORTH;
+                    UpdateRobot(robot, tileX);
+                    break;
+                case "4":
+                    Tile tileCornerLeft = new Tile(tiles.Images[2], TileType.CORNER);
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            tiles.Images[2].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileCornerLeft.Orientation = Orientation.SOUTH;
+                            break;
+                        case Orientation.EAST:
+                            tiles.Images[2].RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileCornerLeft.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.SOUTH:
+                            tileCornerLeft.Orientation = Orientation.NORTH;
+                            break;
+                        case Orientation.WEST:
+                            tiles.Images[2].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileCornerLeft.Orientation = Orientation.EAST;
+                            break;
+                    }
+                    UpdateRobot(robot, tileCornerLeft);
+                    break;
+                case "5":
+                    Tile tileCornerRight = new Tile(tiles.Images[2], TileType.CORNER);
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            tiles.Images[2].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileCornerRight.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.EAST:
+                            tiles.Images[2].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileCornerRight.Orientation = Orientation.SOUTH;
+                            break;
+                        case Orientation.SOUTH:
+                            tiles.Images[2].RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileCornerRight.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.WEST:
+                            tileCornerRight.Orientation = Orientation.NORTH;
+                            break;
+                    }
+                    UpdateRobot(robot, tileCornerRight);
+                    break;
+                case "6":
+                    Tile tileT = new Tile(tiles.Images[3], TileType.TTILE);
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileT.Orientation = Orientation.SOUTH;
+                            break;
+                        case Orientation.EAST:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileT.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.SOUTH:
+                            tileT.Orientation = Orientation.NORTH;
+                            break;
+                        case Orientation.WEST:
+                            tiles.Images[3].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileT.Orientation = Orientation.EAST;
+                            break;
+                    }
+                    UpdateRobot(robot, tileT);
+                    break;
+                case "7":
+                    Tile tileDeadEnd = new Tile(tiles.Images[0], TileType.DEADEND);
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            tileDeadEnd.Orientation = Orientation.NORTH;
+                            break;
+                        case Orientation.EAST:
+                            tiles.Images[0].RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileDeadEnd.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.SOUTH:
+                            tiles.Images[0].RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileDeadEnd.Orientation = Orientation.SOUTH;
+                            break;
+                        case Orientation.WEST:
+                            tiles.Images[0].RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileDeadEnd.Orientation = Orientation.WEST;
+                            break;
+                    }
+                    UpdateRobot(robot, tileDeadEnd);
                     break;
             }
+        }
+
+        private void UpdateRobot(Autobot robot, Tile tile)
+        {
+            ArrayHelper helper = new ArrayHelper(robot.X, robot.Y, tile.Type, tile.Orientation);
+            robot.AddToArray(helper);
         }
 
         private void resetMazeBtn_Click(object sender, EventArgs e)
         {
-            Array.Clear(tileArrayOptimus, 0, tileArrayOptimus.Length);
-            Array.Clear(tileArrayMegatron, 0, tileArrayMegatron.Length);
+            optimus.TileArray.Clear();
+            bumblebee.TileArray.Clear();
             graphic.Clear(Color.White);
 
         }
