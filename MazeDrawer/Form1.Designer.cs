@@ -28,19 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.roboKITTTiles = new System.Windows.Forms.ListBox();
             this.resetMazeBtn = new System.Windows.Forms.Button();
-            this.roboHALTiles = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.messagebox = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
-            // 
-            // roboKITTTiles
-            // 
-            this.roboKITTTiles.FormattingEnabled = true;
-            this.roboKITTTiles.Location = new System.Drawing.Point(1018, 230);
-            this.roboKITTTiles.Name = "roboKITTTiles";
-            this.roboKITTTiles.Size = new System.Drawing.Size(159, 212);
-            this.roboKITTTiles.TabIndex = 0;
             // 
             // resetMazeBtn
             // 
@@ -52,22 +42,14 @@
             this.resetMazeBtn.UseVisualStyleBackColor = true;
             this.resetMazeBtn.Click += new System.EventHandler(this.resetMazeBtn_Click);
             // 
-            // roboHALTiles
+            // messagebox
             // 
-            this.roboHALTiles.FormattingEnabled = true;
-            this.roboHALTiles.Location = new System.Drawing.Point(1018, 12);
-            this.roboHALTiles.Name = "roboHALTiles";
-            this.roboHALTiles.Size = new System.Drawing.Size(159, 212);
-            this.roboHALTiles.TabIndex = 2;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(12, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(1000, 600);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            this.messagebox.FormattingEnabled = true;
+            this.messagebox.Location = new System.Drawing.Point(1018, 12);
+            this.messagebox.Name = "messagebox";
+            this.messagebox.SelectionMode = System.Windows.Forms.SelectionMode.None;
+            this.messagebox.Size = new System.Drawing.Size(159, 433);
+            this.messagebox.TabIndex = 4;
             // 
             // Form1
             // 
@@ -75,10 +57,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1189, 624);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.roboHALTiles);
+            this.Controls.Add(this.messagebox);
             this.Controls.Add(this.resetMazeBtn);
-            this.Controls.Add(this.roboKITTTiles);
             this.Name = "Form1";
             this.Text = "MazeDrawer";
             this.ResumeLayout(false);
@@ -86,11 +66,8 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ListBox roboKITTTiles;
         private System.Windows.Forms.Button resetMazeBtn;
-        private System.Windows.Forms.ListBox roboHALTiles;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ListBox messagebox;
     }
 }
 
