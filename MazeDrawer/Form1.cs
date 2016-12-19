@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Ports;
+using System.Management;
 using System.Windows.Forms;
 using MazeDrawer.HelperClasses;
 using System.Linq;
@@ -53,12 +54,45 @@ namespace MazeDrawer
         private void InitSerialport()
         {
             // Change PortName to whatever COM port the Listener Arduino is connected to. 
-            serialport.PortName = "COM5";
+            serialport.PortName = AutodetectArduinoPort();
             serialport.BaudRate = 9600;
             serialport.Parity = Parity.None;
             serialport.DataBits = 8;
             serialport.StopBits = StopBits.One;
             serialport.ReceivedBytesThreshold = 1;
+        }
+
+        private string AutodetectArduinoPort()
+        {
+            ManagementScope connectionScope = new ManagementScope();
+            SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
+
+            string message = "Something went wrong... =(" + Environment.NewLine + "Check if the Arduino is connected!" + Environment.NewLine + Environment.NewLine + "Bitch...";
+            string caption = "WHOOPS!";
+
+            try
+            {
+                foreach(ManagementObject item in searcher.Get())
+                {
+                    string desc = item["Description"].ToString();
+                    string port = item["DeviceID"].ToString();
+
+                    if (desc.Contains("Arduino"))
+                    {
+                        return port;
+                    }
+                }
+            }
+            catch(ManagementException e)
+            {
+                MessageBox.Show(message, caption);
+                System.Environment.Exit(1);
+            }
+
+            MessageBox.Show(message, caption);
+            System.Environment.Exit(1);
+            return null;
         }
 
         /// <summary>
