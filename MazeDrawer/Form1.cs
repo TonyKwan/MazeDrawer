@@ -4,6 +4,8 @@ using System.Drawing;
 using System.IO.Ports;
 using System.Windows.Forms;
 using MazeDrawer.HelperClasses;
+using System.Linq;
+using System.Text;
 
 namespace MazeDrawer
 {
@@ -31,9 +33,9 @@ namespace MazeDrawer
             graphic = CreateGraphics();
 
             serialport = new SerialPort();
-            //InitSerialport();
-            //serialport.Open();
-            //serialport.DataReceived += Serialport_DataReceived;
+            InitSerialport();
+            serialport.Open();
+            serialport.DataReceived += Serialport_DataReceived;
 
             tiles = new ImageList();
             AddImagesToList();
@@ -60,7 +62,7 @@ namespace MazeDrawer
         }
 
         /// <summary>
-        /// Adds images to the list, why, I dunno....
+        /// Adds images to the list
         /// </summary>
         private void AddImagesToList()
         {
@@ -382,10 +384,91 @@ namespace MazeDrawer
         /// </summary>
         private void CompareMaze()
         {
-            List<ArrayHelper> optimusList = optimus.TileArray;
-            List<ArrayHelper> bumblebeeList = bumblebee.TileArray;
+            ArrayHelper optimusTile = optimus.TileArray.Last();
+            ArrayHelper optimusEast = (ArrayHelper)optimus.TileArray.Where(o => o.X == optimusTile.X + 1);
+            ArrayHelper optimusSouth = (ArrayHelper)optimus.TileArray.Where(o => o.Y == optimusTile.Y - 1);
+            ArrayHelper optimusWest = (ArrayHelper)optimus.TileArray.Where(o => o.X == optimusTile.X - 1);
+            ArrayHelper optimusNorth = (ArrayHelper)optimus.TileArray.Where(o => o.Y == optimusTile.Y + 1);
+            int counter = 0;
 
+            // Arbitrary amount of tiles that need to have been scanned before the computer starts comparing the two mazes 
+            if (optimus.TileArray.Count >= 5 && bumblebee.TileArray.Count >= 5)
+            {
+                foreach(ArrayHelper bumbleB in bumblebee.TileArray.Where(b => b.TileType.Equals(optimusTile.TileType) && b.TileOrientation.Equals(optimusTile.TileOrientation)))
+                {
+                    ArrayHelper bumblebeeEast = (ArrayHelper)bumblebee.TileArray.Where(b => b.X == bumbleB.X + 1);
+                    ArrayHelper bumblebeeSouth = (ArrayHelper)bumblebee.TileArray.Where(b => b.Y == bumbleB.Y - 1);
+                    ArrayHelper bumblebeeWest = (ArrayHelper)bumblebee.TileArray.Where(b => b.X == bumbleB.X - 1);
+                    ArrayHelper bumblebeeNorth = (ArrayHelper)bumblebee.TileArray.Where(b => b.Y == bumbleB.Y + 1);
 
+                    // Is ugly, will remain ugly until an alternative is found
+                    if(optimusEast != null && bumblebeeEast != null)
+                    {
+                        if (optimusEast.TileType.Equals(bumblebeeEast.TileType) && optimusEast.TileOrientation.Equals(bumblebeeEast.TileOrientation))
+                        {
+                            counter++;
+                        }
+                    }
+
+                    if (optimusSouth != null && bumblebeeSouth != null)
+                    {
+                        if (optimusSouth.TileType.Equals(bumblebeeSouth.TileType) && optimusSouth.TileOrientation.Equals(bumblebeeSouth.TileOrientation))
+                        {
+                            counter++;
+                        }
+                    }
+                        
+
+                    if (optimusWest != null && bumblebeeWest != null)
+                    {
+                        if (optimusWest.TileType.Equals(bumblebeeWest.TileType) && optimusWest.TileOrientation.Equals(bumblebeeWest.TileOrientation))
+                        {
+                            counter++;
+                        }
+                    }
+
+                    if (optimusNorth != null && bumblebeeNorth != null)
+                    {
+                        if (optimusNorth.TileType.Equals(bumblebeeNorth.TileType) && optimusNorth.TileOrientation.Equals(bumblebeeNorth.TileOrientation))
+                        {
+                            counter++;
+                        }
+                    }
+
+                    if(counter >= 3)
+                    {
+                        // Do something because optimusTile and bumbleB are the same tile
+                        break;
+                    }
+                    else
+                    {
+                        counter = 0;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tell robot which way to go
+        /// </summary>
+        private void SendData(string data, Autobot robot)
+        {
+            string message;
+            byte[] buffer;
+
+            switch (robot.Name)
+            {
+                case "Optimus":
+                    message = "1 " + data;
+                    buffer = Encoding.ASCII.GetBytes(message);
+                    serialport.Write(buffer, 0, buffer.Count());
+                    break;
+                case "Bumblebee":
+                    message = "2 " + data;
+                    buffer = Encoding.ASCII.GetBytes(message);
+                    serialport.Write(buffer, 0, buffer.Count());
+                    break;
+            }
         }
 
         private void resetMazeBtn_Click(object sender, EventArgs e)
@@ -393,6 +476,7 @@ namespace MazeDrawer
             optimus.TileArray.Clear();
             bumblebee.TileArray.Clear();
             graphic.Clear(Color.White);
+            SendData("49", optimus);
         }
     }
 }
