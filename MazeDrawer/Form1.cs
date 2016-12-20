@@ -23,12 +23,11 @@ namespace MazeDrawer
         private Autobot bumblebee;
         private Graphics graphic;
 
+        private List<ArrayHelper> mazeList;
         private int xOptimus;
         private int yOptimus;
         private int xBumblebee;
         private int yBumblebee;
-
-        private List<ArrayHelper> mazeList;
 
         public Form1()
         {
@@ -37,7 +36,6 @@ namespace MazeDrawer
 
             serialport = new SerialPort();
             InitSerialport();
-            serialport.Open();
             serialport.DataReceived += Serialport_DataReceived;
 
             tiles = new ImageList();
@@ -45,8 +43,7 @@ namespace MazeDrawer
 
             optimus = new Autobot("Optimus", Orientation.NORTH);
             bumblebee = new Autobot("Bumblebee", Orientation.NORTH);
-            
-            // Coordinates for the first tile, in the middle of their respective drawing areas
+
             xOptimus = 237;
             yOptimus = 287;
             xBumblebee = 737;
@@ -64,6 +61,7 @@ namespace MazeDrawer
             serialport.DataBits = 8;
             serialport.StopBits = StopBits.One;
             serialport.ReceivedBytesThreshold = 1;
+            serialport.Open();
         }
 
         /// <summary>
@@ -149,8 +147,8 @@ namespace MazeDrawer
         /// <summary>
         /// Do things with robots and tiles 
         /// </summary>
-        /// <param name="robot"></param>
-        /// <param name="data"></param>
+        /// <param name="robot">The robot that sent the data</param>
+        /// <param name="data">The data</param>
         private void DoRobotyStuff(Autobot robot, string data)
         {
             switch (data[1])
@@ -175,6 +173,7 @@ namespace MazeDrawer
                             tileStraight.Orientation = Orientation.NORTH;
                             break;
                     }
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileStraight);
                     break;
                 case '1':
@@ -197,6 +196,7 @@ namespace MazeDrawer
                             tileTLeft.Orientation = Orientation.NORTH;
                             break;
                     }
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileTLeft);
                     break;
                 case '2':
@@ -219,11 +219,13 @@ namespace MazeDrawer
                             tileTRight.Orientation = Orientation.SOUTH;
                             break;
                     }
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileTRight);
                     break;
                 case '3':
                     Tile tileX = new Tile(tiles.Images[4], TileType.XTILE);
                     tileX.Orientation = Orientation.NORTH;
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileX);
                     break;
                 case '4':
@@ -250,6 +252,7 @@ namespace MazeDrawer
                             robot.Orientation = Orientation.SOUTH;
                             break;
                     }
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileCornerLeft);
                     break;
                 case '5':
@@ -276,6 +279,7 @@ namespace MazeDrawer
                             robot.Orientation = Orientation.NORTH;
                             break;
                     }
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileCornerRight);
                     break;
                 case '6':
@@ -298,6 +302,7 @@ namespace MazeDrawer
                             tileT.Orientation = Orientation.EAST;
                             break;
                     }
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileT);
                     break;
                 case '7':
@@ -320,11 +325,80 @@ namespace MazeDrawer
                             tileDeadEnd.Orientation = Orientation.WEST;
                             break;
                     }
+                    UpdateRobotOrientation(robot, data);
                     UpdateRobotArray(robot, tileDeadEnd);
                     break;
             }
         }
 
+        /// <summary>
+        /// Adjusts a robot's orientation.
+        /// </summary>
+        /// <param name="robot">The Robot</param>
+        /// <param name="data">The data</param>
+        private void UpdateRobotOrientation(Autobot robot, string data)
+        {
+            switch (data[2])
+            {
+                case '1':
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            robot.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.EAST:
+                            robot.Orientation = Orientation.SOUTH;
+                            break;
+                        case Orientation.SOUTH:
+                            robot.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.WEST:
+                            robot.Orientation = Orientation.NORTH;
+                            break;
+                    }
+                    break;
+                case '2':
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            robot.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.EAST:
+                            robot.Orientation = Orientation.NORTH;
+                            break;
+                        case Orientation.SOUTH:
+                            robot.Orientation = Orientation.EAST;
+                            break;
+                        case Orientation.WEST:
+                            robot.Orientation = Orientation.SOUTH;
+                            break;
+                    }
+                    break;
+                case '3':
+                    switch (robot.Orientation)
+                    {
+                        case Orientation.NORTH:
+                            robot.Orientation = Orientation.SOUTH;
+                            break;
+                        case Orientation.EAST:
+                            robot.Orientation = Orientation.WEST;
+                            break;
+                        case Orientation.SOUTH:
+                            robot.Orientation = Orientation.NORTH;
+                            break;
+                        case Orientation.WEST:
+                            robot.Orientation = Orientation.EAST;
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Adds tile to the robot-specific array
+        /// </summary>
+        /// <param name="robot">The robot</param>
+        /// <param name="tile">The tile</param>
         private void UpdateRobotArray(Autobot robot, Tile tile)
         {
             // Only update robot coordinates if it's the second time the robot sends a tile 
@@ -356,6 +430,7 @@ namespace MazeDrawer
         /// </summary>
         private void DrawTile(Autobot robot, Tile tile)
         {
+            // Start drawing in the center of their respective drawing areas. 
             List<ArrayHelper> helperList = robot.TileArray;
             ArrayHelper helper = helperList[helperList.Count - 1];
             ArrayHelper prevHelper = new ArrayHelper(0, 0, tile.Type, tile.Orientation, tile.Image);
@@ -430,6 +505,10 @@ namespace MazeDrawer
             }
         }
 
+        /// <summary>
+        /// Draws merged maze
+        /// </summary>
+        /// <param name="list">List of tiles</param>
         private void DrawMaze(List<ArrayHelper> list)
         {
             // Clear current mazes first
@@ -447,7 +526,7 @@ namespace MazeDrawer
                 }
                 else
                 {
-                    graphic.DrawImage(tile.TileImage, x + tile.DeltaX, y + tile.DeltaY * -1);
+                    graphic.DrawImage(tile.TileImage, x + tile.DeltaX * 50, y + tile.DeltaY * -50);
                 }
                 counter++;
             }
@@ -569,8 +648,17 @@ namespace MazeDrawer
             }
         }
 
+        /// <summary>
+        /// Resets the application.
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event arguments</param>
         private void resetMazeBtn_Click(object sender, EventArgs e)
         {
+            xOptimus = 237;
+            yOptimus = 287;
+            xBumblebee = 737;
+            yBumblebee = 287;
             optimus.TileArray.Clear();
             bumblebee.TileArray.Clear();
             graphic.Clear(Color.White);
