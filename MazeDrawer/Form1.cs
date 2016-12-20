@@ -28,6 +28,8 @@ namespace MazeDrawer
         private int xBumblebee;
         private int yBumblebee;
 
+        private List<ArrayHelper> mazeList;
+
         public Form1()
         {
             InitializeComponent();
@@ -51,10 +53,12 @@ namespace MazeDrawer
             yBumblebee = 287;
         }
 
+        /// <summary>
+        /// Prepares COM port properties 
+        /// </summary>
         private void InitSerialport()
         {
-            // Change PortName to whatever COM port the Listener Arduino is connected to. 
-            serialport.PortName = AutodetectArduinoPort();
+            serialport.PortName = DetectArduinoPort();
             serialport.BaudRate = 9600;
             serialport.Parity = Parity.None;
             serialport.DataBits = 8;
@@ -62,13 +66,17 @@ namespace MazeDrawer
             serialport.ReceivedBytesThreshold = 1;
         }
 
-        private string AutodetectArduinoPort()
+        /// <summary>
+        /// Automatically detects the COM port the Arduino is connected to and returns it 
+        /// </summary>
+        /// <returns>Returns COM port Arduino is connected to</returns>
+        private string DetectArduinoPort()
         {
             ManagementScope connectionScope = new ManagementScope();
             SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
 
-            string message = "Something went wrong... =(" + Environment.NewLine + "Check if the Arduino is connected!" + Environment.NewLine + Environment.NewLine + "Bitch...";
+            string message = "Something went wrong... =(" + Environment.NewLine + "Check if the Arduino is connected!";
             string caption = "WHOOPS!";
 
             try
@@ -145,9 +153,9 @@ namespace MazeDrawer
         /// <param name="data"></param>
         private void DoRobotyStuff(Autobot robot, string data)
         {
-            switch (data)
+            switch (data[1])
             {
-                case "0":
+                case '0':
                     Tile tileStraight = new Tile(tiles.Images[1], TileType.STRAIGHT);
                     switch (robot.Orientation)
                     {
@@ -169,7 +177,7 @@ namespace MazeDrawer
                     }
                     UpdateRobotArray(robot, tileStraight);
                     break;
-                case "1":
+                case '1':
                     Tile tileTLeft = new Tile(tiles.Images[3], TileType.TTILE);
                     switch (robot.Orientation)
                     {
@@ -191,7 +199,7 @@ namespace MazeDrawer
                     }
                     UpdateRobotArray(robot, tileTLeft);
                     break;
-                case "2":
+                case '2':
                     Tile tileTRight = new Tile(tiles.Images[3], TileType.TTILE);
                     switch (robot.Orientation)
                     {
@@ -213,56 +221,64 @@ namespace MazeDrawer
                     }
                     UpdateRobotArray(robot, tileTRight);
                     break;
-                case "3":
+                case '3':
                     Tile tileX = new Tile(tiles.Images[4], TileType.XTILE);
                     tileX.Orientation = Orientation.NORTH;
                     UpdateRobotArray(robot, tileX);
                     break;
-                case "4":
+                case '4':
                     Tile tileCornerLeft = new Tile(tiles.Images[2], TileType.CORNER);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
                             tileCornerLeft.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileCornerLeft.Orientation = Orientation.SOUTH;
+                            robot.Orientation = Orientation.WEST;
                             break;
                         case Orientation.EAST:
                             tileCornerLeft.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileCornerLeft.Orientation = Orientation.WEST;
+                            robot.Orientation = Orientation.NORTH;
                             break;
                         case Orientation.SOUTH:
                             tileCornerLeft.Orientation = Orientation.NORTH;
+                            robot.Orientation = Orientation.EAST;
                             break;
                         case Orientation.WEST:
                             tileCornerLeft.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileCornerLeft.Orientation = Orientation.EAST;
+                            robot.Orientation = Orientation.SOUTH;
                             break;
                     }
                     UpdateRobotArray(robot, tileCornerLeft);
                     break;
-                case "5":
+                case '5':
                     Tile tileCornerRight = new Tile(tiles.Images[2], TileType.CORNER);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
                             tileCornerRight.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileCornerRight.Orientation = Orientation.EAST;
+                            robot.Orientation = Orientation.EAST;
                             break;
                         case Orientation.EAST:
                             tileCornerRight.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileCornerRight.Orientation = Orientation.SOUTH;
+                            robot.Orientation = Orientation.SOUTH;
                             break;
                         case Orientation.SOUTH:
                             tileCornerRight.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileCornerRight.Orientation = Orientation.WEST;
+                            robot.Orientation = Orientation.WEST;
                             break;
                         case Orientation.WEST:
                             tileCornerRight.Orientation = Orientation.NORTH;
+                            robot.Orientation = Orientation.NORTH;
                             break;
                     }
                     UpdateRobotArray(robot, tileCornerRight);
                     break;
-                case "6":
+                case '6':
                     Tile tileT = new Tile(tiles.Images[3], TileType.TTILE);
                     switch (robot.Orientation)
                     {
@@ -284,7 +300,7 @@ namespace MazeDrawer
                     }
                     UpdateRobotArray(robot, tileT);
                     break;
-                case "7":
+                case '7':
                     Tile tileDeadEnd = new Tile(tiles.Images[0], TileType.DEADEND);
                     switch (robot.Orientation)
                     {
@@ -332,6 +348,7 @@ namespace MazeDrawer
             }
             ArrayHelper helper = new ArrayHelper(robot.X, robot.Y, tile.Type, tile.Orientation, tile.Image);
             robot.AddToArray(helper);
+            DrawTile(robot, tile);
         }
 
         /// <summary>
@@ -367,12 +384,12 @@ namespace MazeDrawer
                     }
                     else if (helper.Y < prevHelper.Y)
                     {
-                        yOptimus -= 50;
+                        yOptimus += 50;
                         graphic.DrawImage(tile.Image, xOptimus, yOptimus);
                     }
                     else if (helper.Y > prevHelper.Y)
                     {
-                        yOptimus += 50;
+                        yOptimus -= 50;
                         graphic.DrawImage(tile.Image, xOptimus, yOptimus);
                     }
                     else
@@ -397,12 +414,12 @@ namespace MazeDrawer
                     }
                     else if (helper.Y < prevHelper.Y)
                     {
-                        yBumblebee -= 50;
+                        yBumblebee += 50;
                         graphic.DrawImage(tile.Image, xBumblebee, yBumblebee);
                     }
                     else if (helper.Y > prevHelper.Y)
                     {
-                        yBumblebee += 50;
+                        yBumblebee -= 50;
                         graphic.DrawImage(tile.Image, xBumblebee, yBumblebee);
                     }
                     else
@@ -413,6 +430,29 @@ namespace MazeDrawer
             }
         }
 
+        private void DrawMaze(List<ArrayHelper> list)
+        {
+            // Clear current mazes first
+            graphic.Clear(Color.White);
+            int x = 475;
+            int y = 275;
+            int counter = 0; 
+
+            foreach(ArrayHelper tile in list)
+            {
+                // draw the first tile in the middle of the screen 
+                if(counter == 0)
+                {
+                    graphic.DrawImage(tile.TileImage, x, y);
+                }
+                else
+                {
+                    graphic.DrawImage(tile.TileImage, x + tile.DeltaX, y + tile.DeltaY * -1);
+                }
+                counter++;
+            }
+        }
+        
         /// <summary>
         /// Compares the maze of both robots to figure out where they are relative to one another. 
         /// </summary>
@@ -471,7 +511,8 @@ namespace MazeDrawer
 
                     if(counter >= 3)
                     {
-                        // Do something because optimusTile and bumbleB are the same tile
+                        // If 3 or more tiles match, go ahead and merge the two mazes.
+                        MergeMaze(bumbleB, optimusTile);
                         break;
                     }
                     else
@@ -481,6 +522,32 @@ namespace MazeDrawer
                 }
             }
         }
+        
+        /// <summary>
+        /// Merges both mazes
+        /// </summary>
+        /// <param name="bumbleB">Bumblebee tile</param>
+        /// <param name="optimus">Optimus tile</param>
+        private void MergeMaze(ArrayHelper bumbleB, ArrayHelper optimus)
+        {
+            mazeList.Add(bumbleB);
+            mazeList.Add(optimus);
+
+            foreach(ArrayHelper tile in bumblebee.TileArray.Where(t => t.X != bumbleB.X && t.Y != bumbleB.Y))
+            {
+                tile.DeltaX = tile.X - bumbleB.X;
+                tile.DeltaY = tile.Y - bumbleB.Y;
+                mazeList.Add(tile);
+            }
+            foreach(ArrayHelper tile in this.optimus.TileArray.Where(t => t.X != optimus.X && t.Y != optimus.Y))
+            {
+                tile.DeltaX = tile.X - optimus.X;
+                tile.DeltaY = tile.Y - optimus.Y;
+                mazeList.Add(tile);
+            }
+
+            DrawMaze(mazeList);
+        }
 
         /// <summary>
         /// Tell robot which way to go
@@ -488,19 +555,16 @@ namespace MazeDrawer
         private void SendData(string data, Autobot robot)
         {
             string message;
-            byte[] buffer;
 
             switch (robot.Name)
             {
                 case "Optimus":
                     message = "1 " + data;
-                    buffer = Encoding.ASCII.GetBytes(message);
-                    serialport.Write(buffer, 0, buffer.Count());
+                    serialport.Write(message);
                     break;
                 case "Bumblebee":
                     message = "2 " + data;
-                    buffer = Encoding.ASCII.GetBytes(message);
-                    serialport.Write(buffer, 0, buffer.Count());
+                    serialport.Write(message);
                     break;
             }
         }
@@ -510,7 +574,6 @@ namespace MazeDrawer
             optimus.TileArray.Clear();
             bumblebee.TileArray.Clear();
             graphic.Clear(Color.White);
-            SendData("49", optimus);
         }
     }
 }
