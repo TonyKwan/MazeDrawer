@@ -620,6 +620,9 @@ namespace MazeDrawer
             }
         }
         
+        /*
+         * TODO: Method of comparison is crap, but works for now. Very inefficient for bigger mazes. 
+         */
         /// <summary>
         /// Compares the maze of both robots to check for overlap
         /// </summary>
@@ -712,13 +715,13 @@ namespace MazeDrawer
             foreach(ArrayHelper tile in bumblebee.TileArray)
             {
                 tile.DeltaX = tile.X - bumbleB.X;
-                tile.DeltaY = tile.Y + bumbleB.Y;
+                tile.DeltaY = tile.Y - bumbleB.Y;
                 mazeList.Add(tile);
             }
             foreach(ArrayHelper tile in this.optimus.TileArray)
             {
                 tile.DeltaX = tile.X - optimus.X;
-                tile.DeltaY = tile.Y + optimus.Y;
+                tile.DeltaY = tile.Y - optimus.Y;
                 mazeList.Add(tile);
             }
             isMerged = true;

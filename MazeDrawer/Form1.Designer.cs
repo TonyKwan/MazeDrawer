@@ -66,11 +66,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1189, 624);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.messagebox);
             this.Controls.Add(this.resetMazeBtn);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "MazeDrawer";
             this.ResumeLayout(false);
