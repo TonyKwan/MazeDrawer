@@ -6,7 +6,6 @@ using System.Management;
 using System.Windows.Forms;
 using MazeDrawer.HelperClasses;
 using System.Linq;
-using System.Text;
 
 namespace MazeDrawer
 {
@@ -622,7 +621,7 @@ namespace MazeDrawer
         }
         
         /// <summary>
-        /// Compares the maze of both robots to figure out where they are relative to one another. 
+        /// Compares the maze of both robots to check for overlap
         /// </summary>
         private void CompareMaze()
         {
@@ -696,6 +695,14 @@ namespace MazeDrawer
         }
         
         /// <summary>
+        /// "Fixes" the robots' coordinates after merging the mazes
+        /// </summary>
+        private void FixRobotCoordinates()
+        {
+
+        }
+
+        /// <summary>
         /// Merges both mazes
         /// </summary>
         /// <param name="bumbleB">Bumblebee tile</param>
@@ -738,8 +745,11 @@ namespace MazeDrawer
             }
         }
 
+        /*
+         * TODO: Fix this funtion, doesn't work consistently. Maybe function is crap, maybe external factors causing problems.  
+         */
         /// <summary>
-        /// Resets the application.
+        /// Resets the application, sort of, doesn't really work yet. 
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event arguments</param>
