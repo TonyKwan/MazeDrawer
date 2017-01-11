@@ -39,7 +39,7 @@ namespace MazeDrawer
         /// <param name="obj"></param>
         public void AddToArray(ArrayHelper obj)
         {
-            this.tileArray.Add(obj);
+            tileArray.Add(obj);
         }
     }
 }
