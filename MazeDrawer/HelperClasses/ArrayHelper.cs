@@ -16,15 +16,7 @@ namespace MazeDrawer.HelperClasses
         private Image tileImage;
         private int deltaX;
         private int deltaY;
-
-        public ArrayHelper(int x, int y, TileType tileType, Orientation tileOrientation, Image tileImage)
-        {
-            this.x = x;
-            this.y = y;
-            this.tileType = tileType;
-            this.tileOrientation = tileOrientation;
-            this.tileImage = tileImage;
-        }
+        private List<Enum> directions;
 
         public ArrayHelper(Image tileImage, TileType tileType)
         {
@@ -39,5 +31,16 @@ namespace MazeDrawer.HelperClasses
         public Image TileImage { get { return this.tileImage; } set { this.tileImage = value; } }
         public int DeltaX { get { return this.deltaX; } set { this.deltaX = value; } }
         public int DeltaY { get { return this.deltaY; } set { this.deltaY = value; } }
+        public List<Enum> Directions { get { return this.directions; } }
+
+        public void ClearDirections()
+        {
+            directions.Clear();
+        }
+
+        public void AddDirections(Enum directions)
+        {
+            this.directions.Add(directions);
+        }
     }
 }

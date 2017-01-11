@@ -8,7 +8,18 @@ using MazeDrawer.HelperClasses;
 using System.Linq;
 
 /*
+ * Important stuff:
+ * TODO: Set possible directions when ArrayHelper object is created. 
+ * TODO: Add "?" tile for open ends after merging the mazes. 
+ * TODO: Determine which robot goes in which direction to completely solve the maze
+ * TODO: Communication with robots
+ * 
+ * Extra stuff: 
  * TODO: Add check => If tile is already drawn, skip drawing. It currently redraws a tile if the scanned tile is already drawn. 
+ * TODO: Change how the mazes are being compared. It's very inefficient for larger mazes but works for now.
+ * TODO: Rename the "DoRobotyStuff" function at some point or another. Also write a better summary for the function. 
+ * TODO: Fix the reset button action handler, doesn't work consistently. Maybe function is crap, maybe external factors are causing problems.
+ * TODO: Fix path to images.   
  */
 
 namespace MazeDrawer
@@ -167,9 +178,6 @@ namespace MazeDrawer
             }
         }
 
-        /* TODO: Rename this function at some point or another
-         * Also write a better summary
-         */
         /// <summary>
         /// Do things with robots and tiles 
         /// </summary>
@@ -502,10 +510,7 @@ namespace MazeDrawer
                 counter++;
             }
         }
-        
-        /*
-         * TODO: Change how the mazes are being compared. It's very inefficient for larger mazes but works for now. 
-         */
+
         /// <summary>
         /// Compares the maze of both robots to check for overlap
         /// </summary>
@@ -638,9 +643,6 @@ namespace MazeDrawer
             }
         }
 
-        /*
-         * TODO: Fix this funtion, doesn't work consistently. Maybe function is crap, maybe external factors are causing problems.  
-         */
         /// <summary>
         /// Resets the application, sort of, doesn't really work yet. 
         /// </summary>
