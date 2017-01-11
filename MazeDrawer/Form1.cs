@@ -422,78 +422,6 @@ namespace MazeDrawer
 
             if (robot.TileArray.Count > 0)
             {
-                /*switch (data[2])
-                {
-                    case '0':
-                        switch (robot.Orientation)
-                        {
-                            case Orientation.NORTH:
-                                robot.Y--;
-                                break;
-                            case Orientation.EAST:
-                                robot.X++;
-                                break;
-                            case Orientation.SOUTH:
-                                robot.Y++;
-                                break;
-                            case Orientation.WEST:
-                                robot.X--;
-                                break;
-                        }
-                        break;
-                    case '1':
-                        switch (robot.Orientation)
-                        {
-                            case Orientation.NORTH:
-                                robot.X++;
-                                break;
-                            case Orientation.EAST:
-                                robot.Y++;
-                                break;
-                            case Orientation.SOUTH:
-                                robot.X--;
-                                break;
-                            case Orientation.WEST:
-                                robot.Y--;
-                                break;
-                        }
-                        break;
-                    case '2':
-                        switch (robot.Orientation)
-                        {
-                            case Orientation.NORTH:
-                                robot.Y++;
-                                break;
-                            case Orientation.EAST:
-                                robot.X--;
-                                break;
-                            case Orientation.SOUTH:
-                                robot.Y--;
-                                break;
-                            case Orientation.WEST:
-                                robot.X++;
-                                break;
-                        }
-                        break;
-                    case '3':
-                        switch (robot.Orientation)
-                        {
-                            case Orientation.NORTH:
-                                robot.X--;
-                                break;
-                            case Orientation.EAST:
-                                robot.Y--;
-                                break;
-                            case Orientation.SOUTH:
-                                robot.X++;
-                                break;
-                            case Orientation.WEST:
-                                robot.Y++;
-                                break;
-                        }
-                        break;
-                }*/
-
                 switch (robot.Orientation)
                 {
                     case Orientation.NORTH:
@@ -514,6 +442,7 @@ namespace MazeDrawer
             ArrayHelper helper = new ArrayHelper(robot.X, robot.Y, tile.Type, tile.Orientation, tile.Image);
             robot.AddToArray(helper);
             DrawTile(robot, tile);
+
             if (!isMerged)
             {
                 CompareMaze(robot);
@@ -715,9 +644,14 @@ namespace MazeDrawer
         /// <summary>
         /// "Fixes" the robots' coordinates after merging the mazes
         /// </summary>
-        private void FixRobotCoordinates()
+        /// <param name="bumbleB"></param>
+        /// <param name="optimus"></param>
+        private void FixRobotCoordinates(ArrayHelper bumbleB, ArrayHelper optimus)
         {
-
+            this.optimus.X = this.optimus.X - optimus.X;
+            this.optimus.Y = this.optimus.Y - optimus.Y;
+            bumblebee.X = bumblebee.X - bumbleB.X;
+            bumblebee.Y = bumblebee.Y - bumbleB.Y;
         }
 
         /// <summary>
@@ -727,10 +661,7 @@ namespace MazeDrawer
         /// <param name="optimus">Optimus tile</param>
         private void MergeMaze(ArrayHelper bumbleB, ArrayHelper optimus)
         {
-            this.optimus.X = this.optimus.X - optimus.X;
-            this.optimus.Y = this.optimus.Y - optimus.Y;
-            bumblebee.X = bumblebee.X - bumbleB.X;
-            bumblebee.Y = bumblebee.Y - bumbleB.Y;
+            FixRobotCoordinates(bumbleB, optimus);
 
             foreach(ArrayHelper tile in bumblebee.TileArray)
             {
