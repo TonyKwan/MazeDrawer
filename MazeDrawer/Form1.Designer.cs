@@ -35,6 +35,7 @@
             // 
             // resetMazeBtn
             // 
+            this.resetMazeBtn.Enabled = false;
             this.resetMazeBtn.Location = new System.Drawing.Point(1065, 448);
             this.resetMazeBtn.Name = "resetMazeBtn";
             this.resetMazeBtn.Size = new System.Drawing.Size(75, 23);

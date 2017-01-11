@@ -26,12 +26,10 @@ namespace MazeDrawer.HelperClasses
             this.tileImage = tileImage;
         }
 
-        public ArrayHelper(TileType tileType, Orientation tileOrientation, int deltaX = 0, int deltaY = 0)
+        public ArrayHelper(Image tileImage, TileType tileType)
         {
-            this.deltaX = deltaX;
-            this.deltaY = deltaY;
-            this.tileType = tileType;
-            this.tileOrientation = tileOrientation;
+            this.tileImage = tileImage;
+            this.tileImage = tileImage;
         }
 
         public int X { get { return this.x; } set { this.x = value; } }

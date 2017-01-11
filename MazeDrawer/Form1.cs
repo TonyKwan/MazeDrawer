@@ -7,6 +7,10 @@ using System.Windows.Forms;
 using MazeDrawer.HelperClasses;
 using System.Linq;
 
+/*
+ * TODO: Add check => If tile is already drawn, skip drawing. It currently redraws a tile if the scanned tile is already drawn. 
+ */
+
 namespace MazeDrawer
 {
     public enum Orientation { EAST, SOUTH, WEST, NORTH };
@@ -27,6 +31,9 @@ namespace MazeDrawer
         private int yOptimus;
         private int xBumblebee;
         private int yBumblebee;
+
+        private int centerX;
+        private int centerY; 
 
         private ArrayHelper optimusTile;
         private ArrayHelper bumbleBTile;
@@ -54,6 +61,10 @@ namespace MazeDrawer
             yOptimus = 287;
             xBumblebee = 737;
             yBumblebee = 287;
+
+            centerX = 475;
+            centerY = 275;
+
             isMerged = false;
         }
 
@@ -169,176 +180,167 @@ namespace MazeDrawer
             switch (data[1])
             {
                 case '0':
-                    Tile tileStraight = new Tile(tiles.Images[1], TileType.STRAIGHT);
+                    ArrayHelper tileStraight = new ArrayHelper(tiles.Images[1], TileType.STRAIGHT);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
-                            tileStraight.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileStraight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             //Orientation is relative to the default position of the tile as depicted in the images
-                            tileStraight.Orientation = Orientation.EAST;
+                            tileStraight.TileOrientation = Orientation.EAST;
                             break;
                         case Orientation.EAST:
-                            tileStraight.Orientation = Orientation.NORTH;
+                            tileStraight.TileOrientation = Orientation.NORTH;
                             break;
                         case Orientation.SOUTH:
-                            tileStraight.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            tileStraight.Orientation = Orientation.EAST;
+                            tileStraight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileStraight.TileOrientation = Orientation.EAST;
                             break;
                         case Orientation.WEST:
-                            tileStraight.Orientation = Orientation.NORTH;
+                            tileStraight.TileOrientation = Orientation.NORTH;
                             break;
                     }
                     UpdateRobotArray(robot, tileStraight, data);
                     UpdateRobotOrientation(robot, data);
                     break;
                 case '1':
-                    Tile tileTLeft = new Tile(tiles.Images[3], TileType.TTILE);
+                    ArrayHelper tileTLeft = new ArrayHelper(tiles.Images[3], TileType.TTILE);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
-                            tileTLeft.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            tileTLeft.Orientation = Orientation.EAST;
+                            tileTLeft.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileTLeft.TileOrientation = Orientation.EAST;
                             break;
                         case Orientation.EAST:
-                            tileTLeft.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                            tileTLeft.Orientation = Orientation.SOUTH;
+                            tileTLeft.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileTLeft.TileOrientation = Orientation.SOUTH;
                             break;
                         case Orientation.SOUTH:
-                            tileTLeft.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            tileTLeft.Orientation = Orientation.WEST;
+                            tileTLeft.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileTLeft.TileOrientation = Orientation.WEST;
                             break;
                         case Orientation.WEST:
-                            tileTLeft.Orientation = Orientation.NORTH;
+                            tileTLeft.TileOrientation = Orientation.NORTH;
                             break;
                     }
                     UpdateRobotArray(robot, tileTLeft, data);
                     UpdateRobotOrientation(robot, data);
                     break;
                 case '2':
-                    Tile tileTRight = new Tile(tiles.Images[3], TileType.TTILE);
+                    ArrayHelper tileTRight = new ArrayHelper(tiles.Images[3], TileType.TTILE);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
-                            tileTRight.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            tileTRight.Orientation = Orientation.WEST;
+                            tileTRight.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileTRight.TileOrientation = Orientation.WEST;
                             break;
                         case Orientation.EAST:
-                            tileTRight.Orientation = Orientation.NORTH;
+                            tileTRight.TileOrientation = Orientation.NORTH;
                             break;
                         case Orientation.SOUTH:
-                            tileTRight.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            tileTRight.Orientation = Orientation.EAST;
+                            tileTRight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileTRight.TileOrientation = Orientation.EAST;
                             break;
                         case Orientation.WEST:
-                            tileTRight.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                            tileTRight.Orientation = Orientation.SOUTH;
+                            tileTRight.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileTRight.TileOrientation = Orientation.SOUTH;
                             break;
                     }
                     UpdateRobotArray(robot, tileTRight, data);
                     UpdateRobotOrientation(robot, data);
                     break;
                 case '3':
-                    Tile tileX = new Tile(tiles.Images[4], TileType.XTILE);
-                    tileX.Orientation = Orientation.NORTH;
+                    ArrayHelper tileX = new ArrayHelper(tiles.Images[4], TileType.XTILE);
+                    tileX.TileOrientation = Orientation.NORTH;
                     UpdateRobotArray(robot, tileX, data);
                     UpdateRobotOrientation(robot, data);
                     break;
                 case '4':
-                    Tile tileCornerLeft = new Tile(tiles.Images[2], TileType.CORNER);
+                    ArrayHelper tileCornerLeft = new ArrayHelper(tiles.Images[2], TileType.CORNER);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
-                            tileCornerLeft.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                            tileCornerLeft.Orientation = Orientation.SOUTH;
-                            //robot.Orientation = Orientation.WEST;
+                            tileCornerLeft.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileCornerLeft.TileOrientation = Orientation.SOUTH;
                             break;
                         case Orientation.EAST:
-                            tileCornerLeft.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            tileCornerLeft.Orientation = Orientation.WEST;
-                            //robot.Orientation = Orientation.NORTH;
+                            tileCornerLeft.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileCornerLeft.TileOrientation = Orientation.WEST;
                             break;
                         case Orientation.SOUTH:
-                            tileCornerLeft.Orientation = Orientation.NORTH;
-                            //robot.Orientation = Orientation.EAST;
+                            tileCornerLeft.TileOrientation = Orientation.NORTH;
                             break;
                         case Orientation.WEST:
-                            tileCornerLeft.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            tileCornerLeft.Orientation = Orientation.EAST;
-                            //robot.Orientation = Orientation.SOUTH;
+                            tileCornerLeft.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileCornerLeft.TileOrientation = Orientation.EAST;
                             break;
                     }
                     UpdateRobotArray(robot, tileCornerLeft, data);
                     UpdateRobotOrientation(robot, data);
                     break;
                 case '5':
-                    Tile tileCornerRight = new Tile(tiles.Images[2], TileType.CORNER);
+                    ArrayHelper tileCornerRight = new ArrayHelper(tiles.Images[2], TileType.CORNER);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
-                            tileCornerRight.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            tileCornerRight.Orientation = Orientation.EAST;
-                            //robot.Orientation = Orientation.EAST;
+                            tileCornerRight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileCornerRight.TileOrientation = Orientation.EAST;
                             break;
                         case Orientation.EAST:
-                            tileCornerRight.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                            tileCornerRight.Orientation = Orientation.SOUTH;
-                            //robot.Orientation = Orientation.SOUTH;
+                            tileCornerRight.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileCornerRight.TileOrientation = Orientation.SOUTH;
                             break;
                         case Orientation.SOUTH:
-                            tileCornerRight.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            tileCornerRight.Orientation = Orientation.WEST;
-                            //robot.Orientation = Orientation.WEST;
+                            tileCornerRight.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileCornerRight.TileOrientation = Orientation.WEST;
                             break;
                         case Orientation.WEST:
-                            tileCornerRight.Orientation = Orientation.NORTH;
-                            //robot.Orientation = Orientation.NORTH;
+                            tileCornerRight.TileOrientation = Orientation.NORTH;
                             break;
                     }
                     UpdateRobotArray(robot, tileCornerRight, data);
                     UpdateRobotOrientation(robot, data);
                     break;
                 case '6':
-                    Tile tileT = new Tile(tiles.Images[3], TileType.TTILE);
+                    ArrayHelper tileT = new ArrayHelper(tiles.Images[3], TileType.TTILE);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
-                            //tileT.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                            tileT.Orientation = Orientation.NORTH;
+                            tileT.TileOrientation = Orientation.NORTH;
                             break;
                         case Orientation.EAST:
-                            tileT.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            tileT.Orientation = Orientation.EAST;
+                            tileT.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileT.TileOrientation = Orientation.EAST;
                             break;
                         case Orientation.SOUTH:
-                            tileT.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                            tileT.Orientation = Orientation.SOUTH;
+                            tileT.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileT.TileOrientation = Orientation.SOUTH;
                             break;
                         case Orientation.WEST:
-                            tileT.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            tileT.Orientation = Orientation.WEST;
+                            tileT.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileT.TileOrientation = Orientation.WEST;
                             break;
                     }
                     UpdateRobotArray(robot, tileT, data);
                     UpdateRobotOrientation(robot, data);
                     break;
                 case '7':
-                    Tile tileDeadEnd = new Tile(tiles.Images[0], TileType.DEADEND);
+                    ArrayHelper tileDeadEnd = new ArrayHelper(tiles.Images[0], TileType.DEADEND);
                     switch (robot.Orientation)
                     {
                         case Orientation.NORTH:
-                            tileDeadEnd.Orientation = Orientation.NORTH;
+                            tileDeadEnd.TileOrientation = Orientation.NORTH;
                             break;
                         case Orientation.EAST:
-                            tileDeadEnd.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-                            tileDeadEnd.Orientation = Orientation.EAST;
+                            tileDeadEnd.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                            tileDeadEnd.TileOrientation = Orientation.EAST;
                             break;
                         case Orientation.SOUTH:
-                            tileDeadEnd.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                            tileDeadEnd.Orientation = Orientation.SOUTH;
+                            tileDeadEnd.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            tileDeadEnd.TileOrientation = Orientation.SOUTH;
                             break;
                         case Orientation.WEST:
-                            tileDeadEnd.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                            tileDeadEnd.Orientation = Orientation.WEST;
+                            tileDeadEnd.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                            tileDeadEnd.TileOrientation = Orientation.WEST;
                             break;
                     }
                     UpdateRobotArray(robot, tileDeadEnd, data);
@@ -417,7 +419,7 @@ namespace MazeDrawer
         /// </summary>
         /// <param name="robot">The robot</param>
         /// <param name="tile">The tile</param>
-        private void UpdateRobotArray(Autobot robot, Tile tile, string data)
+        private void UpdateRobotArray(Autobot robot, ArrayHelper tile, string data)
         {
 
             if (robot.TileArray.Count > 0)
@@ -439,8 +441,9 @@ namespace MazeDrawer
                 }
             }
 
-            ArrayHelper helper = new ArrayHelper(robot.X, robot.Y, tile.Type, tile.Orientation, tile.Image);
-            robot.AddToArray(helper);
+            tile.X = robot.X;
+            tile.Y = robot.Y; 
+            robot.AddToArray(tile);
             DrawTile(robot, tile);
 
             if (!isMerged)
@@ -452,88 +455,26 @@ namespace MazeDrawer
         /// <summary>
         /// Draws the tiles
         /// </summary>
-        private void DrawTile(Autobot robot, Tile tile)
+        private void DrawTile(Autobot robot, ArrayHelper helper)
         {
+            int helperOffsetX = helper.X * 50;
+            int helperOffsetY = helper.Y * 50;
+
             if (!isMerged)
             {
-                // Start drawing in the center of their respective drawing areas. 
-                List<ArrayHelper> helperList = robot.TileArray;
-                ArrayHelper helper = helperList[helperList.Count - 1];
-                ArrayHelper prevHelper = new ArrayHelper(0, 0, tile.Type, tile.Orientation, tile.Image);
-
-                if (helperList.Count > 1)
-                {
-                    prevHelper = helperList[helperList.Count - 2];
-                }
-
                 switch (robot.Name)
                 {
                     case "Optimus":
-                        if (helper.X == prevHelper.X && helper.Y == prevHelper.Y)
-                        {
-                            graphic.DrawImage(tile.Image, xOptimus, yOptimus);
-                        }
-                        else if (helper.X < prevHelper.X)
-                        {
-                            xOptimus -= 50;
-                            graphic.DrawImage(tile.Image, xOptimus, yOptimus);
-                        }
-                        else if (helper.X > prevHelper.X)
-                        {
-                            xOptimus += 50;
-                            graphic.DrawImage(tile.Image, xOptimus, yOptimus);
-                        }
-                        else if (helper.Y < prevHelper.Y)
-                        {
-                            yOptimus -= 50;
-                            graphic.DrawImage(tile.Image, xOptimus, yOptimus);
-                        }
-                        else if (helper.Y > prevHelper.Y)
-                        {
-                            yOptimus += 50;
-                            graphic.DrawImage(tile.Image, xOptimus, yOptimus);
-                        }
-                        else
-                        {
-                            this.messagebox.Items.Add("Something went wrong...");
-                        }
+                        graphic.DrawImage(helper.TileImage, xOptimus + helperOffsetX, yOptimus + helperOffsetY);
                         break;
                     case "Bumblebee":
-                        if (helper.X == prevHelper.X && helper.Y == prevHelper.Y)
-                        {
-                            graphic.DrawImage(tile.Image, xBumblebee, yBumblebee);
-                        }
-                        else if (helper.X < prevHelper.X)
-                        {
-                            xBumblebee -= 50;
-                            graphic.DrawImage(tile.Image, xBumblebee, yBumblebee);
-                        }
-                        else if (helper.X > prevHelper.X)
-                        {
-                            xBumblebee += 50;
-                            graphic.DrawImage(tile.Image, xBumblebee, yBumblebee);
-                        }
-                        else if (helper.Y < prevHelper.Y)
-                        {
-                            yBumblebee -= 50;
-                            graphic.DrawImage(tile.Image, xBumblebee, yBumblebee);
-                        }
-                        else if (helper.Y > prevHelper.Y)
-                        {
-                            yBumblebee += 50;
-                            graphic.DrawImage(tile.Image, xBumblebee, yBumblebee);
-                        }
-                        else
-                        {
-                            this.messagebox.Items.Add("Something went wrong...");
-                        }
+                        graphic.DrawImage(helper.TileImage, xBumblebee + helperOffsetX, yBumblebee + helperOffsetY);
                         break;
                 }
             }
             else
             {
-                // secondary draw after merging mazes
-
+                graphic.DrawImage(helper.TileImage, centerX + helperOffsetX, centerY + helperOffsetY);
             }
         }
 
@@ -545,8 +486,6 @@ namespace MazeDrawer
         {
             // Clear current mazes first
             graphic.Clear(Color.White);
-            int x = 475;
-            int y = 275;
             int counter = 0; 
 
             foreach(ArrayHelper tile in list)
@@ -554,11 +493,11 @@ namespace MazeDrawer
                 // draw the first tile in the middle of the screen 
                 if(counter == 0)
                 {
-                    graphic.DrawImage(tile.TileImage, x, y);
+                    graphic.DrawImage(tile.TileImage, centerX, centerY);
                 }
                 else
                 {
-                    graphic.DrawImage(tile.TileImage, x + tile.DeltaX * 50, y - tile.DeltaY * -50);
+                    graphic.DrawImage(tile.TileImage, centerX + tile.DeltaX * 50, centerY - tile.DeltaY * -50);
                 }
                 counter++;
             }
@@ -700,7 +639,7 @@ namespace MazeDrawer
         }
 
         /*
-         * TODO: Fix this funtion, doesn't work consistently. Maybe function is crap, maybe external factors causing problems.  
+         * TODO: Fix this funtion, doesn't work consistently. Maybe function is crap, maybe external factors are causing problems.  
          */
         /// <summary>
         /// Resets the application, sort of, doesn't really work yet. 
@@ -718,6 +657,11 @@ namespace MazeDrawer
             graphic.Clear(Color.White);
         }
 
+        /// <summary>
+        /// Test button to test the data transmission to the listener
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             SendData("3", bumblebee);
