@@ -8,18 +8,21 @@ using MazeDrawer.HelperClasses;
 using System.Linq;
 
 /*
+ * TODO list in no particular order
+ * 
  * Important stuff:
- * TODO: Add "?" tile for open ends after merging the mazes. 
  * TODO: Determine which robot goes in which direction to completely solve the maze
  * TODO: Communication with robots
- * TODO: Robots in list
+ * TODO: Robots in list rather than a switch (See DataReceived(string data)) function 
  * 
  * Extra stuff: 
  * TODO: Add check => If tile is already drawn, skip drawing. It currently redraws a tile if the scanned tile is already drawn. 
- * TODO: Change how the mazes are being compared. It's very inefficient for larger mazes but works for now.
+ * TODO: Change how the mazes are being compared and merged. It's very inefficient for larger mazes but works for now.
  * TODO: Rename the "DoRobotyStuff" function at some point or another. Also write a better summary for the function. 
  * TODO: Fix the reset button action handler, doesn't work consistently. Maybe function is crap, maybe external factors are causing problems.
- * TODO: Fix path to images.   
+ * TODO: Fix path to images.
+ * TODO: Different color maze tiles for different robots in merged maze
+ * TODO: Different tabs in application for each robot to draw on (E.g. Main maze, Robot 1, Robot 2, Robot 3, etc...) 
  */
 
 namespace MazeDrawer
@@ -656,15 +659,15 @@ namespace MazeDrawer
         }
 
         /// <summary>
-        /// Finds open ends and slaps down "?"-tiles. 
+        /// Find open ends and slap down "?" tiles 
         /// </summary>
+        /// <param name="mazeList"></param>
         private void FindLooseEnds(List<ArrayHelper> mazeList)
         {
             foreach(ArrayHelper helper in mazeList)
             {
                 int x = helper.DeltaX;
                 int y = helper.DeltaY;
-                //List<string> directions = helper.Directions;
 
                 foreach(string direction in helper.Directions)
                 {
