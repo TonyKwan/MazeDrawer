@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Tiles\question.jpg" />
     <Content Include="Tiles\corner.jpg" />
     <Content Include="Tiles\deadend.jpg" />
     <Content Include="Tiles\straight.jpg" />

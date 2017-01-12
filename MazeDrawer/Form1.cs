@@ -9,10 +9,10 @@ using System.Linq;
 
 /*
  * Important stuff:
- * TODO: Set possible directions when ArrayHelper object is created. 
  * TODO: Add "?" tile for open ends after merging the mazes. 
  * TODO: Determine which robot goes in which direction to completely solve the maze
  * TODO: Communication with robots
+ * TODO: Robots in list
  * 
  * Extra stuff: 
  * TODO: Add check => If tile is already drawn, skip drawing. It currently redraws a tile if the scanned tile is already drawn. 
@@ -148,6 +148,7 @@ namespace MazeDrawer
             tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "corner.jpg"));
             tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "t-tile.jpg"));
             tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "x-tile.jpg"));
+            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "question.jpg"));
             tiles.ImageSize = new Size(50, 50);
         }
 
@@ -195,16 +196,20 @@ namespace MazeDrawer
                             tileStraight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             //Orientation is relative to the default position of the tile as depicted in the images
                             tileStraight.TileOrientation = Orientation.EAST;
+                            tileStraight.AddDirections(new List<string> { "up", "down" });
                             break;
                         case Orientation.EAST:
                             tileStraight.TileOrientation = Orientation.NORTH;
+                            tileStraight.AddDirections(new List<string> { "left", "right" });
                             break;
                         case Orientation.SOUTH:
                             tileStraight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileStraight.TileOrientation = Orientation.EAST;
+                            tileStraight.AddDirections(new List<string> { "up", "down" });
                             break;
                         case Orientation.WEST:
                             tileStraight.TileOrientation = Orientation.NORTH;
+                            tileStraight.AddDirections(new List<string> { "left", "right" });
                             break;
                     }
                     UpdateRobotArray(robot, tileStraight, data);
@@ -217,17 +222,21 @@ namespace MazeDrawer
                         case Orientation.NORTH:
                             tileTLeft.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileTLeft.TileOrientation = Orientation.EAST;
+                            tileTLeft.AddDirections(new List<string> { "up", "left", "down" });
                             break;
                         case Orientation.EAST:
                             tileTLeft.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileTLeft.TileOrientation = Orientation.SOUTH;
+                            tileTLeft.AddDirections(new List<string> { "left", "right", "up" });
                             break;
                         case Orientation.SOUTH:
                             tileTLeft.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileTLeft.TileOrientation = Orientation.WEST;
+                            tileTLeft.AddDirections(new List<string> { "up", "down", "right" });
                             break;
                         case Orientation.WEST:
                             tileTLeft.TileOrientation = Orientation.NORTH;
+                            tileTLeft.AddDirections(new List<string> { "left", "right", "down" });
                             break;
                     }
                     UpdateRobotArray(robot, tileTLeft, data);
@@ -240,17 +249,21 @@ namespace MazeDrawer
                         case Orientation.NORTH:
                             tileTRight.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileTRight.TileOrientation = Orientation.WEST;
+                            tileTRight.AddDirections(new List<string> { "up", "right", "down" });
                             break;
                         case Orientation.EAST:
                             tileTRight.TileOrientation = Orientation.NORTH;
+                            tileTRight.AddDirections(new List<string> { "left", "right", "down" });
                             break;
                         case Orientation.SOUTH:
                             tileTRight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileTRight.TileOrientation = Orientation.EAST;
+                            tileTRight.AddDirections(new List<string> { "up", "left", "down" });
                             break;
                         case Orientation.WEST:
                             tileTRight.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileTRight.TileOrientation = Orientation.SOUTH;
+                            tileTRight.AddDirections(new List<string> { "left", "right", "up" });
                             break;
                     }
                     UpdateRobotArray(robot, tileTRight, data);
@@ -259,6 +272,7 @@ namespace MazeDrawer
                 case '3':
                     ArrayHelper tileX = new ArrayHelper(tiles.Images[4], TileType.XTILE);
                     tileX.TileOrientation = Orientation.NORTH;
+                    tileX.AddDirections(new List<string> { "left", "right", "down", "up" });
                     UpdateRobotArray(robot, tileX, data);
                     UpdateRobotOrientation(robot, data);
                     break;
@@ -269,17 +283,21 @@ namespace MazeDrawer
                         case Orientation.NORTH:
                             tileCornerLeft.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileCornerLeft.TileOrientation = Orientation.SOUTH;
+                            tileCornerLeft.AddDirections(new List<string> { "left", "down" });
                             break;
                         case Orientation.EAST:
                             tileCornerLeft.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileCornerLeft.TileOrientation = Orientation.WEST;
+                            tileCornerLeft.AddDirections(new List<string> { "left", "up" });
                             break;
                         case Orientation.SOUTH:
                             tileCornerLeft.TileOrientation = Orientation.NORTH;
+                            tileCornerLeft.AddDirections(new List<string> { "up", "right" });
                             break;
                         case Orientation.WEST:
                             tileCornerLeft.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileCornerLeft.TileOrientation = Orientation.EAST;
+                            tileCornerLeft.AddDirections(new List<string> { "right", "down" });
                             break;
                     }
                     UpdateRobotArray(robot, tileCornerLeft, data);
@@ -292,17 +310,21 @@ namespace MazeDrawer
                         case Orientation.NORTH:
                             tileCornerRight.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileCornerRight.TileOrientation = Orientation.EAST;
+                            tileCornerRight.AddDirections(new List<string> { "right", "down" });
                             break;
                         case Orientation.EAST:
                             tileCornerRight.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileCornerRight.TileOrientation = Orientation.SOUTH;
+                            tileCornerRight.AddDirections(new List<string> { "left", "down" });
                             break;
                         case Orientation.SOUTH:
                             tileCornerRight.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileCornerRight.TileOrientation = Orientation.WEST;
+                            tileCornerRight.AddDirections(new List<string> { "left", "up" });
                             break;
                         case Orientation.WEST:
                             tileCornerRight.TileOrientation = Orientation.NORTH;
+                            tileCornerRight.AddDirections(new List<string> { "up", "right" });
                             break;
                     }
                     UpdateRobotArray(robot, tileCornerRight, data);
@@ -314,18 +336,22 @@ namespace MazeDrawer
                     {
                         case Orientation.NORTH:
                             tileT.TileOrientation = Orientation.NORTH;
+                            tileT.AddDirections(new List<string> { "left", "right", "down" });
                             break;
                         case Orientation.EAST:
                             tileT.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileT.TileOrientation = Orientation.EAST;
+                            tileT.AddDirections(new List<string> { "left", "up", "down" });
                             break;
                         case Orientation.SOUTH:
                             tileT.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileT.TileOrientation = Orientation.SOUTH;
+                            tileT.AddDirections(new List<string> { "left", "right", "up" });
                             break;
                         case Orientation.WEST:
                             tileT.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileT.TileOrientation = Orientation.WEST;
+                            tileT.AddDirections(new List<string> { "up", "right", "down" });
                             break;
                     }
                     UpdateRobotArray(robot, tileT, data);
@@ -337,18 +363,22 @@ namespace MazeDrawer
                     {
                         case Orientation.NORTH:
                             tileDeadEnd.TileOrientation = Orientation.NORTH;
+                            tileDeadEnd.AddDirections(new List<string> { "down" });
                             break;
                         case Orientation.EAST:
                             tileDeadEnd.TileImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
                             tileDeadEnd.TileOrientation = Orientation.EAST;
+                            tileDeadEnd.AddDirections(new List<string> { "left" });
                             break;
                         case Orientation.SOUTH:
                             tileDeadEnd.TileImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
                             tileDeadEnd.TileOrientation = Orientation.SOUTH;
+                            tileDeadEnd.AddDirections(new List<string> { "up" });
                             break;
                         case Orientation.WEST:
                             tileDeadEnd.TileImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
                             tileDeadEnd.TileOrientation = Orientation.WEST;
+                            tileDeadEnd.AddDirections(new List<string> { "right" });
                             break;
                     }
                     UpdateRobotArray(robot, tileDeadEnd, data);
@@ -494,20 +524,10 @@ namespace MazeDrawer
         {
             // Clear current mazes first
             graphic.Clear(Color.White);
-            int counter = 0; 
 
             foreach(ArrayHelper tile in list)
             {
-                // draw the first tile in the middle of the screen 
-                if(counter == 0)
-                {
-                    graphic.DrawImage(tile.TileImage, centerX, centerY);
-                }
-                else
-                {
-                    graphic.DrawImage(tile.TileImage, centerX + tile.DeltaX * 50, centerY - tile.DeltaY * -50);
-                }
-                counter++;
+                graphic.DrawImage(tile.TileImage, centerX + tile.DeltaX * 50, centerY - tile.DeltaY * -50);
             }
         }
 
@@ -611,16 +631,80 @@ namespace MazeDrawer
             {
                 tile.DeltaX = tile.X - bumbleB.X;
                 tile.DeltaY = tile.Y - bumbleB.Y;
-                mazeList.Add(tile);
+                ArrayHelper temp = mazeList.Where(t => t.DeltaX == tile.DeltaX && t.DeltaY == tile.DeltaY).FirstOrDefault();
+
+                if(temp == null)
+                {
+                    mazeList.Add(tile);
+                }
             }
             foreach(ArrayHelper tile in this.optimus.TileArray)
             {
                 tile.DeltaX = tile.X - optimus.X;
                 tile.DeltaY = tile.Y - optimus.Y;
-                mazeList.Add(tile);
+                ArrayHelper temp = mazeList.Where(t => t.DeltaX == tile.DeltaX && t.DeltaY == tile.DeltaY).FirstOrDefault();
+
+                if(temp == null)
+                {
+                    mazeList.Add(tile);
+                }
             }
             isMerged = true;
             DrawMaze(mazeList);
+
+            FindLooseEnds(mazeList);
+        }
+
+        /// <summary>
+        /// Finds open ends and slaps down "?"-tiles. 
+        /// </summary>
+        private void FindLooseEnds(List<ArrayHelper> mazeList)
+        {
+            foreach(ArrayHelper helper in mazeList)
+            {
+                int x = helper.DeltaX;
+                int y = helper.DeltaY;
+                //List<string> directions = helper.Directions;
+
+                foreach(string direction in helper.Directions)
+                {
+                    switch (direction)
+                    {
+                        case "up":
+                            ArrayHelper upTile = mazeList.Where(u => u.DeltaX == helper.DeltaX && u.DeltaY == helper.DeltaY - 1).FirstOrDefault();
+                            if(upTile == null)
+                            {
+                                // draw "?" tile above helper
+                                graphic.DrawImage(tiles.Images[5], centerX + x * 50, centerY - 50 + y * 50);
+                            }
+                            break;
+                        case "down":
+                            ArrayHelper downTile = mazeList.Where(d => d.DeltaX == helper.DeltaX && d.DeltaY == helper.DeltaY + 1).FirstOrDefault();
+                            if(downTile == null)
+                            {
+                                // draw "?" tile below helper
+                                graphic.DrawImage(tiles.Images[5], centerX + x * 50, centerY + 50 + y * 50);
+                            }
+                            break;
+                        case "left":
+                            ArrayHelper leftTile = mazeList.Where(l => l.DeltaX == helper.DeltaX - 1 && l.DeltaY == helper.DeltaY).FirstOrDefault();
+                            if (leftTile == null)
+                            {
+                                // draw "?" tile to the left helper
+                                graphic.DrawImage(tiles.Images[5], centerX - 50 + x * 50, centerY + y * 50);
+                            }
+                            break;
+                        case "right":
+                            ArrayHelper rightTile = mazeList.Where(r => r.DeltaX == helper.DeltaX + 1 && r.DeltaY == helper.DeltaY).FirstOrDefault();
+                            if (rightTile == null)
+                            {
+                                // draw "?" tile to the left helper
+                                graphic.DrawImage(tiles.Images[5], centerX + 50 + x * 50, centerY + y * 50);
+                            }
+                            break;
+                    }
+                }
+            }
         }
 
         /// <summary>
