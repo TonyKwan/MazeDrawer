@@ -21,6 +21,12 @@ namespace MazeDrawer.HelperClasses
             directions = new List<string>();
         }
 
+        public ArrayHelper(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
         public int X { get { return this.x; } set { this.x = value; } }
         public int Y { get { return this.y; } set { this.y = value; } }
         public TileType TileType { get { return this.tileType; }set { this.tileType = value; } }

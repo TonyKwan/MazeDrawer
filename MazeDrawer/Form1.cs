@@ -38,6 +38,7 @@ namespace MazeDrawer
         private ImageList tiles;
         private Autobot optimus;
         private Autobot bumblebee;
+        private List<Autobot> autobots;
         private Graphics graphic;
 
         private List<ArrayHelper> mazeList;
@@ -67,9 +68,13 @@ namespace MazeDrawer
             AddImagesToList();
 
             mazeList = new List<ArrayHelper>();
+            autobots = new List<Autobot>();
 
             optimus = new Autobot("Optimus", Orientation.NORTH);
             bumblebee = new Autobot("Bumblebee", Orientation.NORTH);
+
+            autobots.Add(optimus);
+            autobots.Add(bumblebee);
 
             xOptimus = 237;
             yOptimus = 287;
@@ -664,6 +669,8 @@ namespace MazeDrawer
         /// <param name="mazeList"></param>
         private void FindLooseEnds(List<ArrayHelper> mazeList)
         {
+            List<ArrayHelper> questionmarks = new List<ArrayHelper>();
+
             foreach(ArrayHelper helper in mazeList)
             {
                 int x = helper.DeltaX;
@@ -679,6 +686,8 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile above helper
                                 graphic.DrawImage(tiles.Images[5], centerX + x * 50, centerY - 50 + y * 50);
+                                ArrayHelper blergh = new ArrayHelper(x, y);
+                                questionmarks.Add(blergh);
                             }
                             break;
                         case "down":
@@ -687,6 +696,8 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile below helper
                                 graphic.DrawImage(tiles.Images[5], centerX + x * 50, centerY + 50 + y * 50);
+                                ArrayHelper blergh = new ArrayHelper(x, y);
+                                questionmarks.Add(blergh);
                             }
                             break;
                         case "left":
@@ -695,6 +706,8 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile to the left helper
                                 graphic.DrawImage(tiles.Images[5], centerX - 50 + x * 50, centerY + y * 50);
+                                ArrayHelper blergh = new ArrayHelper(x, y);
+                                questionmarks.Add(blergh);
                             }
                             break;
                         case "right":
@@ -703,11 +716,70 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile to the left helper
                                 graphic.DrawImage(tiles.Images[5], centerX + 50 + x * 50, centerY + y * 50);
+                                ArrayHelper blergh = new ArrayHelper(x, y);
+                                questionmarks.Add(blergh);
                             }
                             break;
                     }
                 }
             }
+
+            FindPath(questionmarks);
+        }
+
+        private void FindPath(List<ArrayHelper> helperList)
+        {
+            List<int> directions = new List<int>();
+            
+
+            foreach(Autobot robot in autobots)
+            {
+                Boolean solving = true;
+                int x = robot.X;
+                int y = robot.Y;
+
+                while (solving)
+                {
+                    foreach (ArrayHelper h in helperList)
+                    {
+                        if (h.DeltaX == x && h.DeltaY == y)
+                        {
+                            solving = true;
+                        }
+                        else
+                        {
+                            // get the current tile
+                            ArrayHelper currentTile = mazeList.Where(c => c.DeltaX == x && c.DeltaY == y).FirstOrDefault();
+
+                            foreach (string d in currentTile.Directions)
+                            {
+                                switch(d)
+                                {
+                                    case "up":
+                                        y--;
+                                        directions.Add(0);
+                                        break;
+                                    case "down":
+                                        y++;
+                                        directions.Add(2);
+                                        break;
+                                    case "left":
+                                        x--;
+                                        directions.Add(3);
+                                        break;
+                                    case "right":
+                                        x++;
+                                        directions.Add(1);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+                       
+
+            directions.Reverse();
         }
 
         /// <summary>
