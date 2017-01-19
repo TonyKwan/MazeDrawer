@@ -41,7 +41,7 @@ namespace MazeDrawer
         private List<Autobot> autobots;
         private Graphics graphic;
 
-        private List<ArrayHelper> mazeList;
+        private static List<ArrayHelper> mazeList;
         private int xOptimus;
         private int yOptimus;
         private int xBumblebee;
@@ -86,6 +86,13 @@ namespace MazeDrawer
 
             isMerged = false;
         }
+
+        public static List<ArrayHelper> MazeList()
+        {
+            return mazeList;
+        }
+
+        Astar astar = new Astar();
 
         /// <summary>
         /// Prepares COM port properties 
@@ -723,63 +730,19 @@ namespace MazeDrawer
                     }
                 }
             }
-
-            FindPath(questionmarks);
+            findPath(questionmarks);
         }
 
-        private void FindPath(List<ArrayHelper> helperList)
+        private void findPath(List<ArrayHelper> questionmarks)
         {
-            List<int> directions = new List<int>();
-            
-
-            foreach(Autobot robot in autobots)
+            foreach (Autobot autobot in autobots)
             {
-                Boolean solving = true;
-                int x = robot.X;
-                int y = robot.Y;
-
-                while (solving)
+                ArrayHelper start = (ArrayHelper)mazeList.Where(t => t.DeltaX == autobot.X && t.DeltaY == autobot.Y);
+                foreach (ArrayHelper questionmark in questionmarks)
                 {
-                    foreach (ArrayHelper h in helperList)
-                    {
-                        if (h.DeltaX == x && h.DeltaY == y)
-                        {
-                            solving = true;
-                        }
-                        else
-                        {
-                            // get the current tile
-                            ArrayHelper currentTile = mazeList.Where(c => c.DeltaX == x && c.DeltaY == y).FirstOrDefault();
-
-                            foreach (string d in currentTile.Directions)
-                            {
-                                switch(d)
-                                {
-                                    case "up":
-                                        y--;
-                                        directions.Add(0);
-                                        break;
-                                    case "down":
-                                        y++;
-                                        directions.Add(2);
-                                        break;
-                                    case "left":
-                                        x--;
-                                        directions.Add(3);
-                                        break;
-                                    case "right":
-                                        x++;
-                                        directions.Add(1);
-                                        break;
-                                }
-                            }
-                        }
-                    }
+                    List<ArrayHelper> path = astar.FindPath(start, questionmark);
                 }
             }
-                       
-
-            directions.Reverse();
         }
 
         /// <summary>
