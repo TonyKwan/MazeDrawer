@@ -495,7 +495,24 @@ namespace MazeDrawer
             }
 
             tile.X = robot.X;
-            tile.Y = robot.Y; 
+            tile.Y = robot.Y;
+
+            if (isMerged)
+            {
+                //set deltaX and deltaY
+                switch (robot.Name)
+                {
+                    case "Optimus":
+                        tile.DeltaX = tile.X - optimusTile.DeltaX;
+                        tile.DeltaY = tile.Y - optimusTile.DeltaY;
+                        break;
+                    case "Bumblebee":
+                        tile.DeltaX = tile.X - bumbleBTile.DeltaX;
+                        tile.DeltaY = tile.Y - bumbleBTile.DeltaY;
+                        break;
+                }
+            }
+
             robot.AddToArray(tile);
             DrawTile(robot, tile);
 
@@ -528,6 +545,14 @@ namespace MazeDrawer
             else
             {
                 graphic.DrawImage(helper.TileImage, centerX + helperOffsetX, centerY + helperOffsetY);
+                ArrayHelper temp = mazeList.Where(t => t.DeltaX == helper.DeltaX && t.DeltaY == helper.DeltaY).FirstOrDefault();
+
+                if (temp == null)
+                {
+                    mazeList.Add(helper);
+                }
+
+                FindLooseEnds();
             }
         }
 
@@ -608,7 +633,7 @@ namespace MazeDrawer
                         {
                             // If 3 or more tiles match, go ahead and merge the two mazes.
                             bumbleBTile = bumbleB;
-                            MergeMaze(bumbleBTile, optimusTile);
+                            MergeMaze();
                             break;
                         }
                         else
@@ -638,14 +663,14 @@ namespace MazeDrawer
         /// </summary>
         /// <param name="bumbleB">Bumblebee tile</param>
         /// <param name="optimus">Optimus tile</param>
-        private void MergeMaze(ArrayHelper bumbleB, ArrayHelper optimus)
+        private void MergeMaze()
         {
-            FixRobotCoordinates(bumbleB, optimus);
+            FixRobotCoordinates(bumbleBTile, optimusTile);
 
             foreach(ArrayHelper tile in bumblebee.TileArray)
             {
-                tile.DeltaX = tile.X - bumbleB.X;
-                tile.DeltaY = tile.Y - bumbleB.Y;
+                tile.DeltaX = tile.X - bumbleBTile.X;
+                tile.DeltaY = tile.Y - bumbleBTile.Y;
                 ArrayHelper temp = mazeList.Where(t => t.DeltaX == tile.DeltaX && t.DeltaY == tile.DeltaY).FirstOrDefault();
 
                 if(temp == null)
@@ -655,8 +680,8 @@ namespace MazeDrawer
             }
             foreach(ArrayHelper tile in this.optimus.TileArray)
             {
-                tile.DeltaX = tile.X - optimus.X;
-                tile.DeltaY = tile.Y - optimus.Y;
+                tile.DeltaX = tile.X - optimusTile.X;
+                tile.DeltaY = tile.Y - optimusTile.Y;
                 ArrayHelper temp = mazeList.Where(t => t.DeltaX == tile.DeltaX && t.DeltaY == tile.DeltaY).FirstOrDefault();
 
                 if(temp == null)
@@ -667,14 +692,13 @@ namespace MazeDrawer
             isMerged = true;
             DrawMaze(mazeList);
 
-            FindLooseEnds(mazeList);
+            FindLooseEnds();
         }
 
         /// <summary>
         /// Find open ends and slap down "?" tiles 
         /// </summary>
-        /// <param name="mazeList"></param>
-        private void FindLooseEnds(List<ArrayHelper> mazeList)
+        private void FindLooseEnds()
         {
             List<ArrayHelper> questionmarks = new List<ArrayHelper>();
 
@@ -743,6 +767,9 @@ namespace MazeDrawer
                     List<ArrayHelper> path = astar.FindPath(start, questionmark);
                 }
             }
+                       
+
+            directions.Reverse();
         }
 
         /// <summary>
