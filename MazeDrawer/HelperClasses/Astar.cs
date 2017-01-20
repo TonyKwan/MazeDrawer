@@ -9,7 +9,12 @@ namespace MazeDrawer.HelperClasses
 {
     class Astar
     {
-        List<ArrayHelper> mazeList = Form1.MazeList();
+        List<ArrayHelper> mazeList;
+
+        public Astar()
+        {
+            mazeList = Form1.GetMazeList();
+        }
 
         private List<ArrayHelper> FindSurroundingTiles(ArrayHelper tile)
         {
@@ -25,12 +30,20 @@ namespace MazeDrawer.HelperClasses
                         {
                             surroundingTiles.Add(upTile);
                         }
+                        else
+                        {
+                            break;
+                        }
                         break;
                     case "down":
                         ArrayHelper downTile = mazeList.Where(d => d.DeltaX == tile.DeltaX && d.DeltaY == tile.DeltaY + 1).FirstOrDefault();
                         if(downTile != null)
                         {
                             surroundingTiles.Add(downTile);
+                        }
+                        else
+                        {
+                            break;
                         }
                         break;
                     case "left":
@@ -39,12 +52,20 @@ namespace MazeDrawer.HelperClasses
                         {
                             surroundingTiles.Add(leftTile);
                         }
+                        else
+                        {
+                            break;
+                        }
                         break;
                     case "right":
                         ArrayHelper rightTile = mazeList.Where(r => r.DeltaX == tile.DeltaX + 1 && r.DeltaY == tile.DeltaY).FirstOrDefault();
                         if(rightTile != null)
                         {
                             surroundingTiles.Add(rightTile);
+                        }
+                        else
+                        {
+                            break;
                         }
                         break;
                 }
@@ -92,7 +113,7 @@ namespace MazeDrawer.HelperClasses
             nextHelpers.Sort((helper1, helper2) => helper1.F.CompareTo(helper2.F));
             foreach (var nextHelper in nextHelpers)
             {
-                if (nextHelper.Equals(end))
+                if (nextHelper.DeltaX == end.DeltaX && nextHelper.DeltaY == end.DeltaY)
                 {
                     return true;
                 }

@@ -17,19 +17,16 @@ namespace MazeDrawer.HelperClasses
         private float g;
         private float h;
         private float f;
+        private ArrayHelper parentArrayHelper;
 
-        public ArrayHelper(Image tileImage, TileType tileType)
+        public ArrayHelper(Image tileImage, TileType tileType, int deltaX = 0, int deltaY = 0)
         {
             this.tileImage = tileImage;
             this.tileType = tileType;
             directions = new List<string>();
             State = HelperState.UNTESTED;
-        }
-
-        public ArrayHelper(int x, int y)
-        {
-            this.x = x;
-            this.y = y;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
         }
 
         public int X { get { return this.x; } set { this.x = value; } }
@@ -46,7 +43,7 @@ namespace MazeDrawer.HelperClasses
         public float H { get { return this.h; } set { this.h = value; } }
         public float F { get { return this.g + this.h; } set { this.f = value; } }
         public HelperState State { get; set; }
-        public ArrayHelper ParentArrayHelper { get { return this.ParentArrayHelper; } set { this.ParentArrayHelper = value; } }
+        public ArrayHelper ParentArrayHelper { get { return this.parentArrayHelper; } set { this.parentArrayHelper = value; } }
         public enum HelperState { UNTESTED, OPEN, CLOSED}
 
         public void ClearDirections()

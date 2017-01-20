@@ -28,7 +28,7 @@ using System.Linq;
 namespace MazeDrawer
 {
     public enum Orientation { EAST, SOUTH, WEST, NORTH };
-    public enum TileType { STRAIGHT, TTILE, XTILE, CORNER, DEADEND };
+    public enum TileType { STRAIGHT, TTILE, XTILE, CORNER, DEADEND, QUESTION };
     public partial class Form1 : Form
     {
         private const string DEFAULT_IMAGE_PATH = "D:\\School\\Robots\\MazeDrawer\\MazeDrawer\\Tiles\\";
@@ -87,12 +87,10 @@ namespace MazeDrawer
             isMerged = false;
         }
 
-        public static List<ArrayHelper> MazeList()
+        public static List<ArrayHelper> GetMazeList()
         {
             return mazeList;
         }
-
-        Astar astar = new Astar();
 
         /// <summary>
         /// Prepares COM port properties 
@@ -717,8 +715,12 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile above helper
                                 graphic.DrawImage(tiles.Images[5], centerX + x * 50, centerY - 50 + y * 50);
-                                ArrayHelper blergh = new ArrayHelper(x, y);
-                                questionmarks.Add(blergh);
+                                ArrayHelper qTile = new ArrayHelper(tiles.Images[5], TileType.QUESTION, x, y - 1);
+                                ArrayHelper temp = questionmarks.Where(t => t.DeltaX == qTile.DeltaX && t.DeltaY == qTile.DeltaY).FirstOrDefault();
+                                if (temp == null)
+                                {
+                                    questionmarks.Add(qTile);
+                                }
                             }
                             break;
                         case "down":
@@ -727,8 +729,12 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile below helper
                                 graphic.DrawImage(tiles.Images[5], centerX + x * 50, centerY + 50 + y * 50);
-                                ArrayHelper blergh = new ArrayHelper(x, y);
-                                questionmarks.Add(blergh);
+                                ArrayHelper qTile = new ArrayHelper(tiles.Images[5], TileType.QUESTION, x, y + 1);
+                                ArrayHelper temp = questionmarks.Where(t => t.DeltaX == qTile.DeltaX && t.DeltaY == qTile.DeltaY).FirstOrDefault();
+                                if (temp == null)
+                                {
+                                    questionmarks.Add(qTile);
+                                }
                             }
                             break;
                         case "left":
@@ -737,8 +743,12 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile to the left helper
                                 graphic.DrawImage(tiles.Images[5], centerX - 50 + x * 50, centerY + y * 50);
-                                ArrayHelper blergh = new ArrayHelper(x, y);
-                                questionmarks.Add(blergh);
+                                ArrayHelper qTile = new ArrayHelper(tiles.Images[5], TileType.QUESTION, x - 1, y);
+                                ArrayHelper temp = questionmarks.Where(t => t.DeltaX == qTile.DeltaX && t.DeltaY == qTile.DeltaY).FirstOrDefault();
+                                if (temp == null)
+                                {
+                                    questionmarks.Add(qTile);
+                                }
                             }
                             break;
                         case "right":
@@ -747,29 +757,52 @@ namespace MazeDrawer
                             {
                                 // draw "?" tile to the left helper
                                 graphic.DrawImage(tiles.Images[5], centerX + 50 + x * 50, centerY + y * 50);
-                                ArrayHelper blergh = new ArrayHelper(x, y);
-                                questionmarks.Add(blergh);
+                                ArrayHelper qTile = new ArrayHelper(tiles.Images[5], TileType.QUESTION, x + 1, y);
+                                ArrayHelper temp = questionmarks.Where(t => t.DeltaX == qTile.DeltaX && t.DeltaY == qTile.DeltaY).FirstOrDefault();
+                                if (temp == null)
+                                {
+                                    questionmarks.Add(qTile);
+                                }
                             }
                             break;
                     }
                 }
             }
+            foreach(ArrayHelper question in questionmarks)
+            {
+                mazeList.Add(question);
+            }
+
             findPath(questionmarks);
         }
 
         private void findPath(List<ArrayHelper> questionmarks)
         {
+            Astar astar = new Astar();
+            
             foreach (Autobot autobot in autobots)
             {
-                ArrayHelper start = (ArrayHelper)mazeList.Where(t => t.DeltaX == autobot.X && t.DeltaY == autobot.Y);
+                List<ArrayHelper> path = new List<ArrayHelper>();
+                ArrayHelper start = (ArrayHelper)mazeList.Where(t => t.DeltaX == autobot.X && t.DeltaY == autobot.Y).FirstOrDefault();
+
                 foreach (ArrayHelper questionmark in questionmarks)
                 {
-                    List<ArrayHelper> path = astar.FindPath(start, questionmark);
-                }
-            }
-                       
+                    path = astar.FindPath(start, questionmark);
 
-            directions.Reverse();
+                    foreach(ArrayHelper helper in mazeList.Where(h => h.State != ArrayHelper.HelperState.UNTESTED))
+                    {
+                        helper.State = ArrayHelper.HelperState.UNTESTED;
+                        helper.ParentArrayHelper = null;
+                    }
+
+                    messagebox.Items.Add("Path " + autobot.Name + " " + questionmark.DeltaX + " " + questionmark.DeltaY);
+                    foreach (ArrayHelper helper in path)
+                    {
+                        messagebox.Items.Add(helper.DeltaX + " " + helper.DeltaY);
+                    }
+                }
+
+            }
         }
 
         /// <summary>
