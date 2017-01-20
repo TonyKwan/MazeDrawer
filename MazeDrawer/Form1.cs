@@ -801,7 +801,6 @@ namespace MazeDrawer
                         messagebox.Items.Add(helper.DeltaX + " " + helper.DeltaY);
                     }
                 }
-
             }
         }
 
