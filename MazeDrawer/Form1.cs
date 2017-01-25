@@ -779,6 +779,7 @@ namespace MazeDrawer
 
         private void findPath(List<ArrayHelper> questionmarks)
         {
+            messagebox.Items.Clear();
             Astar astar = new Astar();
             
             foreach (Autobot autobot in autobots)
@@ -796,7 +797,7 @@ namespace MazeDrawer
                         helper.ParentArrayHelper = null;
                     }
 
-                    messagebox.Items.Add("Path " + autobot.Name + " " + questionmark.DeltaX + " " + questionmark.DeltaY);
+                    messagebox.Items.Add("Path " + autobot.Name + " to " + questionmark.DeltaX + " " + questionmark.DeltaY);
                     foreach (ArrayHelper helper in path)
                     {
                         messagebox.Items.Add(helper.DeltaX + " " + helper.DeltaY);
