@@ -23,6 +23,7 @@ using System.Linq;
  * TODO: Fix path to images.
  * TODO: Different color maze tiles for different robots in merged maze
  * TODO: Different tabs in application for each robot to draw on (E.g. Main maze, Robot 1, Robot 2, Robot 3, etc...) 
+ * TODO: Messages can get lost if multiple robots transmit at the same time (close after one another). Implement a delay either here or on the robots. 
  */
 
 namespace MazeDrawer
@@ -837,6 +838,8 @@ namespace MazeDrawer
             yBumblebee = 287;
             optimus.TileArray.Clear();
             bumblebee.TileArray.Clear();
+            optimus.Orientation = Orientation.NORTH;
+            bumblebee.Orientation = Orientation.NORTH;
             graphic.Clear(Color.White);
         }
 

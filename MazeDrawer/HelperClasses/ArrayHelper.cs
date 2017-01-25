@@ -46,11 +46,6 @@ namespace MazeDrawer.HelperClasses
         public ArrayHelper ParentArrayHelper { get { return this.parentArrayHelper; } set { this.parentArrayHelper = value; } }
         public enum HelperState { UNTESTED, OPEN, CLOSED}
 
-        public void ClearDirections()
-        {
-            directions.Clear();
-        }
-
         public void AddDirections(List<string> directions)
         {
             foreach(string s in directions)
