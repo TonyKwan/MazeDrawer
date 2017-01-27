@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MazeDrawer.HelperClasses
@@ -16,6 +17,7 @@ namespace MazeDrawer.HelperClasses
         {
             List<ArrayHelper> surroundingTiles = new List<ArrayHelper>();
 
+            
             foreach(string direction in tile.Directions)
             {
                 switch (direction)
@@ -24,7 +26,10 @@ namespace MazeDrawer.HelperClasses
                         ArrayHelper upTile = mazeList.Where(u => u.DeltaX == tile.DeltaX && u.DeltaY == tile.DeltaY - 1).FirstOrDefault();
                         if(upTile != null)
                         {
-                            surroundingTiles.Add(upTile);
+                            if(upTile.TileType != TileType.DEADEND)
+                            {
+                                surroundingTiles.Add(upTile);
+                            }
                         }
                         else
                         {
@@ -35,7 +40,10 @@ namespace MazeDrawer.HelperClasses
                         ArrayHelper downTile = mazeList.Where(d => d.DeltaX == tile.DeltaX && d.DeltaY == tile.DeltaY + 1).FirstOrDefault();
                         if(downTile != null)
                         {
-                            surroundingTiles.Add(downTile);
+                            if (downTile.TileType != TileType.DEADEND)
+                            {
+                                surroundingTiles.Add(downTile);
+                            }
                         }
                         else
                         {
@@ -46,7 +54,10 @@ namespace MazeDrawer.HelperClasses
                         ArrayHelper leftTile = mazeList.Where(l => l.DeltaX == tile.DeltaX - 1 && l.DeltaY == tile.DeltaY).FirstOrDefault();
                         if(leftTile != null)
                         {
-                            surroundingTiles.Add(leftTile);
+                            if (leftTile.TileType != TileType.DEADEND)
+                            {
+                                surroundingTiles.Add(leftTile);
+                            }
                         }
                         else
                         {
@@ -57,7 +68,10 @@ namespace MazeDrawer.HelperClasses
                         ArrayHelper rightTile = mazeList.Where(r => r.DeltaX == tile.DeltaX + 1 && r.DeltaY == tile.DeltaY).FirstOrDefault();
                         if(rightTile != null)
                         {
-                            surroundingTiles.Add(rightTile);
+                            if (rightTile.TileType != TileType.DEADEND)
+                            {
+                                surroundingTiles.Add(rightTile);
+                            }
                         }
                         else
                         {
@@ -69,13 +83,43 @@ namespace MazeDrawer.HelperClasses
             return surroundingTiles;
         }
 
-        private List<ArrayHelper> GetAdjacentTiles(ArrayHelper startTile)
+        private void setValues(List<ArrayHelper> surroundingTiles, ArrayHelper start, ArrayHelper end)
+        {
+            int x, y;
+            foreach(ArrayHelper tile in surroundingTiles)
+            {
+                if(tile.DeltaX > end.DeltaX && (tile.DeltaX >= 0 || end.DeltaX >= 0))
+                {
+                    x = Math.Abs(tile.DeltaX - Math.Abs(end.DeltaX));
+                }
+                else
+                {
+                    x = Math.Abs(end.DeltaX) - Math.Abs(tile.DeltaX);
+                }
+
+                if (tile.DeltaY > end.DeltaY && (tile.DeltaY >= 0 || end.DeltaY >= 0))
+                {
+                    y = Math.Abs(tile.DeltaY - Math.Abs(end.DeltaY));
+                }
+                else
+                {
+                    y = Math.Abs(end.DeltaY) - Math.Abs(tile.DeltaY);
+                }
+                
+                tile.H = x + y;
+                tile.G = start.G++;
+            }
+        }
+
+        private List<ArrayHelper> GetAdjacentTiles(ArrayHelper startTile, ArrayHelper endTile)
         {
             List<ArrayHelper> options = new List<ArrayHelper>();
             List<ArrayHelper> surroundingTiles = FindSurroundingTiles(startTile);
+            setValues(surroundingTiles, startTile, endTile);
 
             foreach (ArrayHelper tile in surroundingTiles)
             {
+                tile.G += 1;
                 // Ignore already-closed tiles
                 if (tile.State == ArrayHelper.HelperState.CLOSED)
                     continue;
@@ -103,7 +147,7 @@ namespace MazeDrawer.HelperClasses
         private bool Search(ArrayHelper helper, ArrayHelper end)
         {
             helper.State = ArrayHelper.HelperState.CLOSED;
-            List<ArrayHelper> nextHelpers = GetAdjacentTiles(helper);
+            List<ArrayHelper> nextHelpers = GetAdjacentTiles(helper, end);
 
             // Sort by F-value
             nextHelpers.Sort((helper1, helper2) => helper1.F.CompareTo(helper2.F));
