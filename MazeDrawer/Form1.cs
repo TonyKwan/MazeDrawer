@@ -21,7 +21,7 @@ using System.Linq;
  * TODO: Rename the "DoRobotyStuff" function at some point or another. Also write a better summary for the function. 
  * TODO: Fix the reset button action handler, doesn't work consistently. Maybe function is crap, maybe external factors are causing problems.
  * TODO: Fix path to images.
- * TODO: Different color maze tiles for different robots in merged maze
+ * TODO: Draw a circle around/on the tile where the robots are located. 
  * TODO: Different tabs in application for each robot to draw on (E.g. Main maze, Robot 1, Robot 2, Robot 3, etc...) 
  * TODO: Messages can get lost if multiple robots transmit at the same time (close after one another). Implement a delay either here or on the robots. 
  */
