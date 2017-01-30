@@ -797,11 +797,6 @@ namespace MazeDrawer
                     }
                 }
             }
-            /*foreach(ArrayHelper question in questionmarks)
-            {
-                mazeList.Add(question);
-            }*/
-
             findPath(questionmarks);
         }
 
