@@ -157,14 +157,14 @@ namespace MazeDrawer
         /// </summary>
         private void AddImagesToList()
         {
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "deadend.jpg"));
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "straight.jpg"));
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "corner.jpg"));
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "t-tile.jpg"));
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "x-tile.jpg"));
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "question.jpg"));
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "circleOptimus.png"));
-            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "circleBumblebee.png"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//deadend.jpg"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//straight.jpg"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//corner.jpg"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//t-tile.jpg"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//x-tile.jpg"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//question.jpg"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//circleOptimus.png"));
+            tiles.Images.Add(Image.FromFile("..//..//Tiles//circleBumblebee.png"));
             tiles.ImageSize = new Size(50, 50);
         }
 
