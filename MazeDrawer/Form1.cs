@@ -20,8 +20,6 @@ using System.Linq;
  * TODO: Change how the mazes are being compared and merged. It's very inefficient for larger mazes but works for now.
  * TODO: Rename the "DoRobotyStuff" function at some point or another. Also write a better summary for the function. 
  * TODO: Fix the reset button action handler, doesn't work consistently. Maybe function is crap, maybe external factors are causing problems.
- * TODO: Fix path to images.
- * TODO: Draw a circle around/on the tile where the robots are located. 
  * TODO: Different tabs in application for each robot to draw on (E.g. Main maze, Robot 1, Robot 2, Robot 3, etc...) 
  * TODO: Messages can get lost if multiple robots transmit at the same time (close after one another). Implement a delay either here or on the robots. 
  */
@@ -32,8 +30,6 @@ namespace MazeDrawer
     public enum TileType { STRAIGHT, TTILE, XTILE, CORNER, DEADEND, QUESTION };
     public partial class Form1 : Form
     {
-        private const string DEFAULT_IMAGE_PATH = "D:\\School\\Robots\\MazeDrawer\\MazeDrawer\\Tiles\\";
-
         // Class for reading the Arduino serial input
         private SerialPort serialport;
         private ImageList tiles;
