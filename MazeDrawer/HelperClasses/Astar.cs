@@ -13,7 +13,7 @@ namespace MazeDrawer.HelperClasses
             mazeList = Form1.GetMazeList();
         }
 
-        private List<ArrayHelper> FindSurroundingTiles(ArrayHelper tile)
+        private List<ArrayHelper> FindSurroundingTiles(ArrayHelper tile, ArrayHelper end)
         {
             List<ArrayHelper> surroundingTiles = new List<ArrayHelper>();
 
@@ -31,6 +31,10 @@ namespace MazeDrawer.HelperClasses
                                 surroundingTiles.Add(upTile);
                             }
                         }
+                        else if (tile.DeltaX == end.DeltaX && tile.DeltaY - 1 == end.DeltaY)
+                        {
+                            surroundingTiles.Add(end);
+                        }
                         else
                         {
                             break;
@@ -44,6 +48,10 @@ namespace MazeDrawer.HelperClasses
                             {
                                 surroundingTiles.Add(downTile);
                             }
+                        }
+                        else if (tile.DeltaX == end.DeltaX && tile.DeltaY + 1 == end.DeltaY)
+                        {
+                            surroundingTiles.Add(end);
                         }
                         else
                         {
@@ -59,6 +67,10 @@ namespace MazeDrawer.HelperClasses
                                 surroundingTiles.Add(leftTile);
                             }
                         }
+                        else if (tile.DeltaX - 1 == end.DeltaX && tile.DeltaY == end.DeltaY)
+                        {
+                            surroundingTiles.Add(end);
+                        }
                         else
                         {
                             break;
@@ -72,6 +84,10 @@ namespace MazeDrawer.HelperClasses
                             {
                                 surroundingTiles.Add(rightTile);
                             }
+                        }
+                        else if (tile.DeltaX + 1 == end.DeltaX && tile.DeltaY == end.DeltaY)
+                        {
+                            surroundingTiles.Add(end);
                         }
                         else
                         {
@@ -114,7 +130,7 @@ namespace MazeDrawer.HelperClasses
         private List<ArrayHelper> GetAdjacentTiles(ArrayHelper startTile, ArrayHelper endTile)
         {
             List<ArrayHelper> options = new List<ArrayHelper>();
-            List<ArrayHelper> surroundingTiles = FindSurroundingTiles(startTile);
+            List<ArrayHelper> surroundingTiles = FindSurroundingTiles(startTile, endTile);
             setValues(surroundingTiles, startTile, endTile);
 
             foreach (ArrayHelper tile in surroundingTiles)
