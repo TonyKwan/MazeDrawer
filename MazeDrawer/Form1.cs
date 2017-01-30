@@ -163,6 +163,8 @@ namespace MazeDrawer
             tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "t-tile.jpg"));
             tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "x-tile.jpg"));
             tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "question.jpg"));
+            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "circleOptimus.png"));
+            tiles.Images.Add(Image.FromFile(DEFAULT_IMAGE_PATH + "circleBumblebee.png"));
             tiles.ImageSize = new Size(50, 50);
         }
 
@@ -544,6 +546,20 @@ namespace MazeDrawer
             else
             {
                 graphic.DrawImage(helper.TileImage, centerX + helperOffsetX, centerY + helperOffsetY);
+
+                switch (robot.Name)
+                {
+                    case "Optimus":
+                        graphic.DrawImage(tiles.Images[6], centerX + helperOffsetX, centerY + helperOffsetY);
+                        break;
+                    case "Bumblebee":
+                        graphic.DrawImage(tiles.Images[7], centerX + helperOffsetX, centerY + helperOffsetY);
+                        break;
+                }
+
+                ArrayHelper prev = robot.TileArray[robot.TileArray.Count - 2];
+                graphic.DrawImage(prev.TileImage, centerX + prev.DeltaX * 50, centerY + prev.DeltaY * 50);
+
                 ArrayHelper temp = mazeList.Where(t => t.DeltaX == helper.DeltaX && t.DeltaY == helper.DeltaY).FirstOrDefault();
 
                 if (temp == null)
@@ -567,6 +583,18 @@ namespace MazeDrawer
             foreach(ArrayHelper tile in list)
             {
                 graphic.DrawImage(tile.TileImage, centerX + tile.DeltaX * 50, centerY - tile.DeltaY * -50);
+            }
+
+            foreach(Autobot robot in autobots)
+            {
+                if (robot.Name.Equals("Optimus"))
+                {
+                    graphic.DrawImage(tiles.Images[6], centerX + robot.X * 50, centerY - robot.Y * -50);
+                }
+                else if (robot.Name.Equals("Bumblebee"))
+                {
+                    graphic.DrawImage(tiles.Images[7], centerX + robot.X * 50, centerY - robot.Y * -50);
+                }
             }
         }
 
@@ -769,10 +797,10 @@ namespace MazeDrawer
                     }
                 }
             }
-            foreach(ArrayHelper question in questionmarks)
+            /*foreach(ArrayHelper question in questionmarks)
             {
                 mazeList.Add(question);
-            }
+            }*/
 
             findPath(questionmarks);
         }

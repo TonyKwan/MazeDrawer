@@ -107,7 +107,7 @@ namespace MazeDrawer.HelperClasses
                 }
                 
                 tile.H = x + y;
-                tile.G = start.G++;
+                tile.G = start.G + 1;
             }
         }
 
@@ -119,7 +119,6 @@ namespace MazeDrawer.HelperClasses
 
             foreach (ArrayHelper tile in surroundingTiles)
             {
-                tile.G += 1;
                 // Ignore already-closed tiles
                 if (tile.State == ArrayHelper.HelperState.CLOSED)
                     continue;
